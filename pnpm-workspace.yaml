@@ -38,8 +38,8 @@ minimumReleaseAgeExclude:
   - expo-router@56.2.15 || 57.0.7
   - expo-sharing@56.0.22 || 57.0.6
   - expo-splash-screen@56.0.13
-  - expo-dev-client@56.0.23 || 57.0.7
-  - expo-dev-launcher@56.0.24 || 57.0.7
-  - expo-dev-menu@56.0.20 || 57.0.7
+  - expo-dev-client@56.0.23 || 57.0.7 || 57.0.9
+  - expo-dev-launcher@56.0.24 || 57.0.7 || 57.0.9
+  - expo-dev-menu@56.0.20 || 57.0.7 || 57.0.9
   - expo-media-library@57.0.3
   - react-native-camera-tool
