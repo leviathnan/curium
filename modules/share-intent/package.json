@@ -1,0 +1,9 @@
+{
+  "name": "share-intent",
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "platforms": ["android"],
+  "android": {
+    "sourceDir": "android"
+  }
+}
