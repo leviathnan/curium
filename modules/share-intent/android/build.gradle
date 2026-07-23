@@ -1,0 +1,31 @@
+plugins {
+  id("com.android.library")
+  id("org.jetbrains.kotlin.android")
+  `expo-module`
+}
+
+android {
+  namespace = "expo.modules.shareintent"
+  compileSdk = safeEnvInt("compileSdkVersion", 35)
+
+  defaultConfig {
+    minSdk = safeEnvInt("minSdkVersion", 24)
+  }
+
+  compileOptions {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+  }
+
+  kotlinOptions {
+    jvmTarget = "17"
+  }
+}
+
+fun safeEnvInt(key: String, default: Int): Int {
+  return try {
+    rootProject.extra[key].toString().toInt()
+  } catch (_: Exception) {
+    default
+  }
+}
