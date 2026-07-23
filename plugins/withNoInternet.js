@@ -10,13 +10,6 @@ const NETWORK_STATE_PERMISSIONS = [
   "android.permission.ACCESS_WIFI_STATE",
 ];
 
-/**
- * Strips network permissions from the Android manifest.
- *
- * ACCESS_NETWORK_STATE / ACCESS_WIFI_STATE — always stripped (offline app).
- * INTERNET — stripped in release builds only via src/release/AndroidManifest.xml overlay.
- * Debug builds keep INTERNET (required for expo-dev-client / Metro).
- */
 module.exports = function withNoInternet(config) {
   config = withAndroidManifest(config, (cfg) => {
     const manifest = cfg.modResults.manifest;
