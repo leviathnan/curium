@@ -11,6 +11,7 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   withSpring,
+  runOnJS,
   Easing,
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
@@ -76,7 +77,7 @@ export function ShareOverlay({ content, onDismiss }: Props) {
     cardScale.value = withTiming(0.94, { duration: 160 });
     progress.value = withTiming(0, { duration: 160 }, () => {
       "worklet";
-      onDismiss();
+      runOnJS(onDismiss)();
     });
   }, [onDismiss]);
 
