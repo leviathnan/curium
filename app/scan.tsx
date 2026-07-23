@@ -19,6 +19,7 @@ import {
   PERMISSIONS,
   RESULTS,
 } from "react-native-permissions";
+import { Platform } from "react-native";
 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Icon } from "@/components/ui/Icon";
@@ -147,15 +148,20 @@ export default function ScanScreen() {
   const scannedRef = useRef(false);
   const cameraRef = useRef<CameraApi | null>(null);
 
+  const cameraPermission =
+    Platform.OS === "ios"
+      ? PERMISSIONS.IOS.CAMERA
+      : PERMISSIONS.ANDROID.CAMERA;
+
   // Check camera permission on mount
   useEffect(() => {
-    check(PERMISSIONS.ANDROID.CAMERA).then(setPermissionStatus);
+    check(cameraPermission).then(setPermissionStatus);
   }, []);
 
   const requestPermission = useCallback(async () => {
-    const status = await request(PERMISSIONS.ANDROID.CAMERA);
+    const status = await request(cameraPermission);
     setPermissionStatus(status);
-  }, []);
+  }, [cameraPermission]);
 
   const onCodeRead = useCallback(
     (event: { nativeEvent: { codeStringValue: string } }) => {
