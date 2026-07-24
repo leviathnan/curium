@@ -74,7 +74,7 @@ export default function LicensesScreen() {
             { color: colors.text, fontFamily: Fonts.monoBold },
           ]}
         >
-          Licenses
+          License
         </Text>
         <View style={{ width: 36 }} />
       </View>
