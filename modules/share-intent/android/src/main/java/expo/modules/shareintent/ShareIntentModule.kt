@@ -21,7 +21,7 @@ class ShareIntentModule : Module() {
 
     OnNewIntent { intent ->
       val content = parseIntent(intent) ?: return@OnNewIntent
-      sendEvent("onSharedContent", content)
+      this@ShareIntentModule.sendEvent("onSharedContent", content)
     }
 
     OnCreate {
@@ -34,7 +34,7 @@ class ShareIntentModule : Module() {
     if (intent?.action != Intent.ACTION_SEND) return null
     val extras = intent.extras ?: return null
     val text = extras.getCharSequence(Intent.EXTRA_TEXT)?.toString()
-    val stream = extras.getParcelable<Uri>(Intent.EXTRA_STREAM)
+    val stream = extras.getParcelable(Intent.EXTRA_STREAM, Uri::class.java)
     val type = intent.type ?: ""
 
     return when {
