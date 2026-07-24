@@ -415,12 +415,20 @@ export default function AboutScreen() {
             index={5}
           />
           <ActionRow
+            icon="book-open-outline"
+            label="Licenses"
+            sub="AGPL-3.0 + open source dependencies"
+            onPress={() => router.push("/licenses")}
+            tintColor={colors.primary}
+            index={6}
+          />
+          <ActionRow
             icon="logo-x"
             label="Follow Nylxar"
             sub={X_URL.replace("https://", "")}
             onPress={() => openLink(X_URL, "X")}
             tintColor={colors.primary}
-            index={0}
+            index={7}
             last
           />
         </View>
