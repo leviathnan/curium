@@ -1,9 +1,9 @@
 {
-  "commit": "84ad2cf025f7c86548a4ab9e3a96852869cd426d",
-  "shortCommit": "84ad2cf",
+  "commit": "b7b50d3afdf1d05e42fcf23622c6a7b6f11932ab",
+  "shortCommit": "b7b50d3",
   "branch": "preview",
-  "commitDate": "2026-07-23 15:01:11 +0300",
-  "commitMessage": "up1500230726",
+  "commitDate": "2026-07-24 12:31:38 +0300",
+  "commitMessage": "update: eas.json",
   "isDirty": true,
-  "buildDate": "2026-07-23T16:52:19.772Z"
+  "buildDate": "2026-07-24T10:00:34.419Z"
 }
