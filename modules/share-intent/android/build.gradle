@@ -1,31 +1,24 @@
-plugins {
-  id("com.android.library")
-  id("org.jetbrains.kotlin.android")
-  `expo-module`
-}
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 android {
-  namespace = "expo.modules.shareintent"
-  compileSdk = safeEnvInt("compileSdkVersion", 35)
+  namespace "expo.modules.shareintent"
+  compileSdkVersion safeExtGet("compileSdkVersion", 35)
 
   defaultConfig {
-    minSdk = safeEnvInt("minSdkVersion", 24)
+    minSdkVersion safeExtGet("minSdkVersion", 24)
   }
 
   compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
   }
 
   kotlinOptions {
-    jvmTarget = "17"
+    jvmTarget = '17'
   }
 }
 
-fun safeEnvInt(key: String, default: Int): Int {
-  return try {
-    rootProject.extra[key].toString().toInt()
-  } catch (_: Exception) {
-    default
-  }
+def safeExtGet(prop, fallback) {
+  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
