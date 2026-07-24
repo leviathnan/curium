@@ -271,25 +271,20 @@ export default function ScanScreen() {
         break;
       }
       case "wifi":
-        await Linking.openURL("action:android.settings.WIFI_SETTINGS");
+        await Clipboard.setStringAsync(
+          `WIFI:S:${parsed.ssid};T:${parsed.encryption};P:${parsed.password};;`,
+        );
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        toast.success("WiFi copied", `Network: ${parsed.ssid}\nPassword: ${parsed.password}`);
         break;
-      case "contact": {
-        const vcard = [
-          "BEGIN:VCARD",
-          "VERSION:3.0",
-          `FN:${parsed.name || ""}`,
-          `TEL:${parsed.phone || ""}`,
-          `EMAIL:${parsed.email || ""}`,
-          `ORG:${parsed.org || ""}`,
-          "END:VCARD",
-        ].join("\n");
-        await Clipboard.setStringAsync(vcard);
+      case "contact":
+        await Clipboard.setStringAsync(result);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         toast.success(
           "Contact copied",
           "VCard data copied. Open your contacts app and paste to add.",
         );
         break;
-      }
       case "location": {
         const lat = parseFloat(parsed.lat);
         const lng = parseFloat(parsed.lng);
@@ -303,25 +298,8 @@ export default function ScanScreen() {
         break;
       }
       case "event": {
-        const lines = [
-          "BEGIN:VCALENDAR",
-          "VERSION:2.0",
-          "BEGIN:VEVENT",
-        ];
-        if (parsed.title) lines.push(`SUMMARY:${parsed.title}`);
-        if (parsed.start) {
-          const fmt = parsed.start.replace(/[-: ]/g, "").replace(/(\d{8})(\d{4})/, "$1T$2");
-          lines.push(`DTSTART:${fmt}`);
-        }
-        if (parsed.end) {
-          const fmt = parsed.end.replace(/[-: ]/g, "").replace(/(\d{8})(\d{4})/, "$1T$2");
-          lines.push(`DTEND:${fmt}`);
-        }
-        if (parsed.location) lines.push(`LOCATION:${parsed.location}`);
-        lines.push("END:VEVENT", "END:VCALENDAR");
-        const ics = lines.join("\n");
         const file = new File(Paths.cache, "event.ics");
-        file.write(ics);
+        file.write(result);
         await Sharing.shareAsync(file.uri, {
           mimeType: "text/calendar",
           UTI: "com.apple.ics",
