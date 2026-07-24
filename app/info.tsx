@@ -416,8 +416,8 @@ export default function AboutScreen() {
           />
           <ActionRow
             icon="book-open-outline"
-            label="Licenses"
-            sub="AGPL-3.0 + open source dependencies"
+            label="License and Credits"
+            sub="Open source libraries"
             onPress={() => router.push("/licenses")}
             tintColor={colors.primary}
             index={6}
