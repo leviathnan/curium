@@ -1,4 +1,5 @@
-import { X as XIcon, Check } from "lucide-react";
+import { XIcon, CheckIcon } from "@phosphor-icons/react";
+import { CollapsibleSection } from "../components/CollapsibleSection";
 
 export function AboutPanel() {
   const PROBLEMS = [
@@ -18,8 +19,7 @@ export function AboutPanel() {
 
   return (
     <>
-      <div className="section">
-        <div className="section-title">What is this</div>
+      <CollapsibleSection title="What is this">
         <p
           style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.8 }}
         >
@@ -27,9 +27,9 @@ export function AboutPanel() {
           entirely on your device. No servers. No accounts. No cloud. Your QR
           codes, your data, your rules.
         </p>
-      </div>
-      <div className="section">
-        <div className="section-title">Why it exists</div>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Why it exists">
         <p
           style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.8 }}
         >
@@ -49,9 +49,9 @@ export function AboutPanel() {
           server. It does not need your location. It does not need to phone
           home. It is math — and math works offline.
         </p>
-      </div>
-      <div className="section">
-        <div className="section-title">The problem</div>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="The problem">
         <div className="point-list">
           {PROBLEMS.map((p, i) => (
             <div key={i} className="point-row">
@@ -60,22 +60,20 @@ export function AboutPanel() {
             </div>
           ))}
         </div>
-      </div>
-      <div className="section">
-        <div className="section-title">What Curium does differently</div>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="What Curium does differently">
         <div className="point-list">
           {DIFFERENCES.map((d, i) => (
             <div key={i} className="point-row">
-              <Check size={14} className="point-icon-success" />
+              <CheckIcon size={14} className="point-icon-success" />
               <span className="point-text">{d}</span>
             </div>
           ))}
         </div>
-      </div>
-      <div className="section">
-        <div className="section-title">
-          Against capitalism for simple things
-        </div>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Against capitalism for simple things">
         <p
           style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.8 }}
         >
@@ -96,9 +94,9 @@ export function AboutPanel() {
           Some things should respect your privacy by default, not as a premium
           feature.
         </p>
-      </div>
-      <div className="section">
-        <div className="section-title">The future</div>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="The future">
         <p
           style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.8 }}
         >
@@ -117,7 +115,7 @@ export function AboutPanel() {
           We are building the definitive QR tool. Not the one that makes the
           most money. The one that makes all others unnecessary.
         </p>
-      </div>
+      </CollapsibleSection>
     </>
   );
 }

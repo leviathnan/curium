@@ -5,14 +5,16 @@ import {
   StyleSheet,
   TouchableOpacity,
   useWindowDimensions,
+  Platform,
 } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  withSpring,
+  runOnJS,
   Easing,
 } from "react-native-reanimated";
+import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
 import { captureRef } from "react-native-view-shot";
 import { File } from "expo-file-system";
@@ -22,8 +24,29 @@ import { QRCanvas } from "@/components/qr/QRCanvas";
 import { useTheme } from "@/context/ThemeContext";
 import { useToast } from "@/components/ui/Toast";
 import { Spacing, Radius, FontSize, Fonts } from "@/constants/theme";
-import { DEFAULT_QR_STYLE } from "@/types/qr";
+import { DEFAULT_QR_STYLE, type QRStyle } from "@/types/qr";
+import { QR_COLORS } from "@/constants/theme";
 import type { SharedContent } from "@/hooks/useShareIntent";
+
+const RANDOM_STYLES = QR_COLORS.filter((c) => c.id !== "paper");
+
+const EYE_SHAPES: QRStyle["eyeShape"][] = [
+  "sharp", "soft", "round", "pill", "dot", "shield", "hexagon", "octagon",
+];
+const PUPIL_SHAPES: QRStyle["pupilShape"][] = [
+  "dot", "square", "diamond", "cross", "hexagon", "octagon", "shield",
+  "star", "heart", "blob", "dome", "oval", "pentagon", "scallop", "cloud",
+  "droplet", "pixel", "none",
+];
+const PIXEL_SHAPES: QRStyle["pixelShape"][] = [
+  "sharp", "soft", "round", "dots", "liquid", "glued", "smooth", "flow",
+  "blob", "diamond", "cross", "star", "triangle", "hexagon", "plus", "heart",
+  "sparkle", "pinched-square", "circuit-board", "hashtag",
+  "vertical-line", "horizontal-line",
+];
+const NONE_PROBABILITY = 0.1;
+const ENTRANCE_CURVE = Easing.bezier(0.16, 1, 0.3, 1);
+const EXIT_CURVE = Easing.bezier(0.4, 0, 1, 1);
 
 interface Props {
   content: SharedContent;
@@ -51,42 +74,56 @@ export function ShareOverlay({ content, onDismiss }: Props) {
     [isDark],
   );
 
-  // Entry animation
-  const progress = useSharedValue(0);
-  const bgOpacity = useSharedValue(0);
-  const cardScale = useSharedValue(0.92);
+  const [activeStyle, setActiveStyle] = useState(qrStyle);
+
+  const shuffleStyle = useCallback(() => {
+    const r = RANDOM_STYLES[Math.floor(Math.random() * RANDOM_STYLES.length)];
+    const eye = EYE_SHAPES[Math.floor(Math.random() * EYE_SHAPES.length)];
+    const pool = PUPIL_SHAPES.filter((p) => p !== "none");
+    const weightedPool =
+      Math.random() < NONE_PROBABILITY
+        ? PUPIL_SHAPES
+        : pool;
+    const pupil =
+      weightedPool[Math.floor(Math.random() * weightedPool.length)];
+    const pixel = PIXEL_SHAPES[Math.floor(Math.random() * PIXEL_SHAPES.length)];
+    setActiveStyle((prev) => ({
+      ...prev,
+      colorId: r.id,
+      fgColor: r.fg,
+      bgColor: r.bg,
+      eyeColor: r.fg,
+      pupilColor: r.fg,
+      eyeShape: eye,
+      pupilShape: pupil,
+      pixelShape: pixel,
+    }));
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }, []);
+
+  const enter = useSharedValue(0);
 
   useEffect(() => {
-    bgOpacity.value = withTiming(1, {
-      duration: 240,
-      easing: Easing.out(Easing.cubic),
-    });
-    cardScale.value = withSpring(1, {
-      damping: 18,
-      stiffness: 260,
-    });
-    progress.value = withTiming(1, {
-      duration: 280,
-      easing: Easing.out(Easing.cubic),
-    });
+    enter.value = withTiming(1, { duration: 260, easing: ENTRANCE_CURVE });
   }, []);
 
   const dismiss = useCallback(() => {
-    bgOpacity.value = withTiming(0, { duration: 180 });
-    cardScale.value = withTiming(0.94, { duration: 160 });
-    progress.value = withTiming(0, { duration: 160 }, () => {
-      "worklet";
-      onDismiss();
-    });
+    enter.value = withTiming(
+      0,
+      { duration: 160, easing: EXIT_CURVE },
+      (finished) => {
+        "worklet";
+        if (finished) runOnJS(onDismiss)();
+      },
+    );
   }, [onDismiss]);
 
   const backdropStyle = useAnimatedStyle(() => ({
-    opacity: bgOpacity.value,
+    opacity: enter.value,
   }));
 
   const cardStyle = useAnimatedStyle(() => ({
-    opacity: progress.value,
-    transform: [{ scale: cardScale.value }],
+    opacity: enter.value,
   }));
 
   const copyValue = useCallback(async () => {
@@ -130,12 +167,20 @@ export function ShareOverlay({ content, onDismiss }: Props) {
 
   return (
     <Animated.View style={[styles.backdrop, backdropStyle]}>
+      <BlurView
+        intensity={80}
+        tint={isDark ? "dark" : "light"}
+        style={StyleSheet.absoluteFill}
+      />
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: isDark ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.2)" }]} />
       <TouchableOpacity
         style={StyleSheet.absoluteFill}
         activeOpacity={1}
         onPress={dismiss}
       />
       <Animated.View
+        needsOffscreenAlphaCompositing
+        renderToHardwareTextureAndroid
         style={[
           styles.card,
           {
@@ -179,21 +224,21 @@ export function ShareOverlay({ content, onDismiss }: Props) {
             {
               width: qrSize,
               height: qrSize,
-              backgroundColor: qrStyle.bgColor,
-              borderRadius: qrStyle.qrCorners,
+              backgroundColor: activeStyle.bgColor,
+              borderRadius: activeStyle.qrCorners,
             },
           ]}
         >
           <QRCanvas
             value={qrValue}
             size={qrSize}
-            qrStyle={qrStyle}
+            qrStyle={activeStyle}
             skipAnimation
-            logoUri={qrStyle.logoUri}
+            logoUri={activeStyle.logoUri}
             logoSize={48}
-            logoStyle={qrStyle.logoStyle}
-            logoBgColor={qrStyle.bgColor}
-            logoPosition={qrStyle.logoPosition}
+            logoStyle={activeStyle.logoStyle}
+            logoBgColor={activeStyle.bgColor}
+            logoPosition={activeStyle.logoPosition}
           />
         </View>
 
@@ -217,6 +262,25 @@ export function ShareOverlay({ content, onDismiss }: Props) {
 
         {/* Actions */}
         <View style={styles.actions}>
+          <TouchableOpacity
+            onPress={shuffleStyle}
+            style={[
+              styles.actionBtn,
+              { backgroundColor: colors.surfaceOffset, borderColor: colors.border },
+            ]}
+            activeOpacity={0.7}
+          >
+            <Icon name="shuffle" size={16} color={colors.text} />
+            <Text
+              style={[
+                styles.actionLabel,
+                { color: colors.text, fontFamily: Fonts.monoBold },
+              ]}
+            >
+              Shuffle
+            </Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
             onPress={copyValue}
             style={[
@@ -275,7 +339,6 @@ export function ShareOverlay({ content, onDismiss }: Props) {
 const styles = StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: "rgba(0,0,0,0.55)",
     justifyContent: "center",
     alignItems: "center",
     padding: Spacing.xl,

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { ChevronDown } from "lucide-react";
+import { CaretDownIcon } from "@phosphor-icons/react";
 
 const URL_PRESETS: { label: string; prefix: string }[] = [
   { label: "YouTube", prefix: "https://youtube.com/" },
@@ -86,7 +86,7 @@ export function URLPresets({ onSelect }: URLPresetsProps) {
         type="button"
       >
         <span>Quick fill</span>
-        <ChevronDown size={12} className={`presets-chevron ${open ? "open" : ""}`} />
+        <CaretDownIcon size={12} className={`presets-chevron ${open ? "open" : ""}`} />
       </button>
       {dropdown}
     </>

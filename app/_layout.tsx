@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { useFonts } from "expo-font";
@@ -55,12 +55,7 @@ export default function RootLayout() {
   const appStyle = useAnimatedStyle(() => ({ opacity: appOp.value }));
 
   const [splashHidden, setSplashHidden] = useState(false);
-  const [sharedContent, setSharedContent] = useState<ReturnType<typeof useShareIntent>>(null);
-  const hookResult = useShareIntent();
-
-  useEffect(() => {
-    if (hookResult) setSharedContent(hookResult);
-  }, [hookResult]);
+  const { shared: sharedContent, clear: clearShareIntent } = useShareIntent();
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
@@ -177,6 +172,10 @@ export default function RootLayout() {
                         options={{ animation: "simple_push", animationDuration: 200 }}
                       />
                       <Stack.Screen
+                        name="licenses"
+                        options={{ animation: "simple_push", animationDuration: 200 }}
+                      />
+                      <Stack.Screen
                         name="about"
                         options={{ animation: "simple_push", animationDuration: 200 }}
                       />
@@ -189,7 +188,7 @@ export default function RootLayout() {
                     {sharedContent && (
                       <ShareOverlay
                         content={sharedContent}
-                        onDismiss={() => setSharedContent(null)}
+                        onDismiss={clearShareIntent}
                       />
                     )}
                   </SafeAreaProvider>

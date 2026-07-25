@@ -1,16 +1,16 @@
 import type { QRType, QRStyle } from "@curium/shared";
 import {
-  QrCode,
-  Palette,
-  SlidersHorizontal,
-  Layers,
-  Bookmark,
-  History,
-  Settings,
-  Info,
-  LifeBuoy,
-  Cpu,
-} from "lucide-react";
+  QrCodeIcon,
+  PaletteIcon,
+  SlidersHorizontalIcon,
+  StackIcon,
+  BookmarkSimpleIcon,
+  ClockCounterClockwiseIcon,
+  GearSixIcon,
+  InfoIcon,
+  LifebuoyIcon,
+  CpuIcon,
+} from "@phosphor-icons/react";
 
 export interface FormState {
   url: { url: string };
@@ -81,18 +81,18 @@ export const QR_TYPES: { id: QRType; label: string }[] = [
   { id: "otpauth", label: "OTP Auth" },
 ];
 
-export const TOP_TABS: { id: TabId; icon: typeof QrCode; label: string }[] = [
-  { id: "generate", icon: QrCode, label: "Generate" },
-  { id: "style", icon: Palette, label: "Style" },
-  { id: "adjust", icon: SlidersHorizontal, label: "Adjust" },
-  { id: "batch", icon: Layers, label: "Batch" },
-  { id: "templates", icon: Bookmark, label: "Templates" },
-  { id: "history", icon: History, label: "History" },
+export const TOP_TABS: { id: TabId; icon: typeof QrCodeIcon; label: string }[] = [
+  { id: "generate", icon: QrCodeIcon, label: "Generate" },
+  { id: "style", icon: PaletteIcon, label: "Style" },
+  { id: "adjust", icon: SlidersHorizontalIcon, label: "Adjust" },
+  { id: "batch", icon: StackIcon, label: "Batch" },
+  { id: "templates", icon: BookmarkSimpleIcon, label: "Templates" },
+  { id: "history", icon: ClockCounterClockwiseIcon, label: "History" },
 ];
 
-export const BOTTOM_TABS: { id: TabId; icon: typeof History; label: string }[] = [
-  { id: "settings", icon: Settings, label: "Settings" },
-  { id: "about", icon: Info, label: "About" },
-  { id: "info", icon: Cpu, label: "Info" },
-  { id: "support", icon: LifeBuoy, label: "Support" },
+export const BOTTOM_TABS: { id: TabId; icon: typeof ClockCounterClockwiseIcon; label: string }[] = [
+  { id: "settings", icon: GearSixIcon, label: "Settings" },
+  { id: "about", icon: InfoIcon, label: "About" },
+  { id: "info", icon: CpuIcon, label: "Info" },
+  { id: "support", icon: LifebuoyIcon, label: "Support" },
 ];

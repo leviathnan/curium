@@ -7,7 +7,7 @@ import {
   QR_COLORS,
 } from "@curium/shared";
 import { zipSync, strToU8 } from "fflate";
-import { Shuffle } from "lucide-react";
+import { ShuffleIcon } from "@phosphor-icons/react";
 import { QRPreview } from "./components/QRPreview";
 import { LogoOverlay } from "./components/LogoOverlay";
 import { StylePanel } from "./panels/StylePanel";
@@ -675,7 +675,7 @@ export default function App() {
                   onClick={handleShuffle}
                   title="Shuffle"
                 >
-                  <Shuffle size={16} />
+                  <ShuffleIcon size={16} />
                 </button>
                 <ExportBar
                   svg={exportSvg ?? svg}

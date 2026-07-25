@@ -7,13 +7,19 @@ import {
   Linking,
 } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
-import { Camera, CameraType } from "react-native-camera-kit";
+import {
+  Camera,
+  CameraType,
+  type CameraApi,
+  type ScannedBarcode,
+} from "react-native-camera-tool";
 import {
   check,
   request,
   PERMISSIONS,
   RESULTS,
 } from "react-native-permissions";
+import { Platform } from "react-native";
 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Icon } from "@/components/ui/Icon";
@@ -140,16 +146,22 @@ export default function ScanScreen() {
   const { colors, isDark } = useTheme();
   const toast = useToast();
   const scannedRef = useRef(false);
+  const cameraRef = useRef<CameraApi | null>(null);
+
+  const cameraPermission =
+    Platform.OS === "ios"
+      ? PERMISSIONS.IOS.CAMERA
+      : PERMISSIONS.ANDROID.CAMERA;
 
   // Check camera permission on mount
   useEffect(() => {
-    check(PERMISSIONS.ANDROID.CAMERA).then(setPermissionStatus);
+    check(cameraPermission).then(setPermissionStatus);
   }, []);
 
   const requestPermission = useCallback(async () => {
-    const status = await request(PERMISSIONS.ANDROID.CAMERA);
+    const status = await request(cameraPermission);
     setPermissionStatus(status);
-  }, []);
+  }, [cameraPermission]);
 
   const onCodeRead = useCallback(
     (event: { nativeEvent: { codeStringValue: string } }) => {
@@ -202,7 +214,22 @@ export default function ScanScreen() {
   }));
 
   const handleGalleryScan = useCallback(async () => {
-    toast.info("Coming soon", "Gallery scanning will be available in a future update.");
+    try {
+      const barcodes = await cameraRef.current?.pickAndScan({
+        allowedBarcodeTypes: [...BARCODE_TYPES],
+      });
+      if (barcodes && barcodes.length > 0) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        setResult(barcodes[0].codeStringValue);
+        setScanned(true);
+      } else {
+        toast.warning("No QR code found", "The selected image does not contain a readable QR or barcode.");
+      }
+    } catch (error: any) {
+      if (error?.code !== "E_PICKER_CANCELLED") {
+        toast.error("Scan failed", "Could not read the image. Try a clearer photo.");
+      }
+    }
   }, [toast]);
 
   const detectedType = result ? detectQRType(result).type : null;
@@ -244,25 +271,20 @@ export default function ScanScreen() {
         break;
       }
       case "wifi":
-        await Linking.openURL("action:android.settings.WIFI_SETTINGS");
+        await Clipboard.setStringAsync(
+          `WIFI:S:${parsed.ssid};T:${parsed.encryption};P:${parsed.password};;`,
+        );
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        toast.success("WiFi copied", `Network: ${parsed.ssid}\nPassword: ${parsed.password}`);
         break;
-      case "contact": {
-        const vcard = [
-          "BEGIN:VCARD",
-          "VERSION:3.0",
-          `FN:${parsed.name || ""}`,
-          `TEL:${parsed.phone || ""}`,
-          `EMAIL:${parsed.email || ""}`,
-          `ORG:${parsed.org || ""}`,
-          "END:VCARD",
-        ].join("\n");
-        await Clipboard.setStringAsync(vcard);
+      case "contact":
+        await Clipboard.setStringAsync(result);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         toast.success(
           "Contact copied",
           "VCard data copied. Open your contacts app and paste to add.",
         );
         break;
-      }
       case "location": {
         const lat = parseFloat(parsed.lat);
         const lng = parseFloat(parsed.lng);
@@ -276,25 +298,8 @@ export default function ScanScreen() {
         break;
       }
       case "event": {
-        const lines = [
-          "BEGIN:VCALENDAR",
-          "VERSION:2.0",
-          "BEGIN:VEVENT",
-        ];
-        if (parsed.title) lines.push(`SUMMARY:${parsed.title}`);
-        if (parsed.start) {
-          const fmt = parsed.start.replace(/[-: ]/g, "").replace(/(\d{8})(\d{4})/, "$1T$2");
-          lines.push(`DTSTART:${fmt}`);
-        }
-        if (parsed.end) {
-          const fmt = parsed.end.replace(/[-: ]/g, "").replace(/(\d{8})(\d{4})/, "$1T$2");
-          lines.push(`DTEND:${fmt}`);
-        }
-        if (parsed.location) lines.push(`LOCATION:${parsed.location}`);
-        lines.push("END:VEVENT", "END:VCALENDAR");
-        const ics = lines.join("\n");
         const file = new File(Paths.cache, "event.ics");
-        file.write(ics);
+        file.write(result);
         await Sharing.shareAsync(file.uri, {
           mimeType: "text/calendar",
           UTI: "com.apple.ics",
@@ -376,6 +381,7 @@ export default function ScanScreen() {
   return (
     <View style={styles.screen}>
       <Camera
+        ref={cameraRef}
         style={StyleSheet.absoluteFill}
         cameraType={CameraType.Back}
         torchMode={torch ? "on" : "off"}

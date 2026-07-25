@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Pressable,
   Keyboard,
 } from "react-native";
 import { Icon, type IconName } from "@/components/ui/Icon";
@@ -119,6 +120,68 @@ function Field({
         textAlignVertical={multiline ? "top" : "center"}
         selectionColor={colors.primary + "60"}
       />
+    </View>
+  );
+}
+
+function PasswordField({
+  value,
+  onChange,
+  tintColor,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  tintColor: string;
+}) {
+  const { colors } = useTheme();
+  const [visible, setVisible] = useState(false);
+  return (
+    <View style={fStyles.wrap}>
+      <Text
+        style={[fStyles.label, { color: colors.textMuted, fontFamily: Fonts.mono }]}
+      >
+        Password
+      </Text>
+      <View style={{ position: "relative" }}>
+        <TextInput
+          style={[
+            fStyles.input,
+            {
+              backgroundColor: colors.surfaceOffset,
+              borderColor: colors.border,
+              color: colors.text,
+              fontFamily: Fonts.mono,
+              height: 48,
+              paddingRight: 44,
+            },
+          ]}
+          value={value}
+          onChangeText={onChange}
+          placeholder="Wi-Fi password"
+          placeholderTextColor={colors.textFaint}
+          secureTextEntry={!visible}
+          autoCapitalize="none"
+          autoCorrect={false}
+          selectionColor={colors.primary + "60"}
+        />
+        <Pressable
+          onPress={() => setVisible((v) => !v)}
+          hitSlop={8}
+          style={{
+            position: "absolute",
+            right: 12,
+            top: 0,
+            bottom: 0,
+            justifyContent: "center",
+          }}
+        >
+          <Icon
+            name={visible ? "eye-off-outline" : "eye-outline"}
+            size={18}
+            color={tintColor}
+          />
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -275,15 +338,12 @@ export function FormModal({
               placeholder="MyHomeWiFi"
               autoFocus
             />
-            <Field
-              label="Password"
+            <PasswordField
               value={forms.wifi.password}
               tintColor={tintColor}
               onChange={(v) =>
                 onUpdateForm("wifi", { ...forms.wifi, password: v })
               }
-              placeholder="Wi-Fi password"
-              secureTextEntry
             />
             <View style={{ gap: 6 }}>
               <Text

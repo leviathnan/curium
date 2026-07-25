@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const KOFI_URL = "https://ko-fi.com/nylxar";
 const GUMROAD_URL = "https://nylxar.gumroad.com/coffee";
 const PAYPAL_URL = "https://www.paypal.com/ncp/payment/DUAR5EJ7A3RV8";
+const GITHUB_SPONSORS_URL = "https://github.com/sponsors/nylxar";
 
 interface SupportOption {
   icon: IconName;
@@ -32,6 +33,13 @@ const OPTIONS: SupportOption[] = [
     color: "#FF5E5B",
   },
   {
+    icon: "currency-dollar",
+    title: "GitHub Sponsors",
+    desc: "",
+    url: GITHUB_SPONSORS_URL,
+    color: "#003087",
+  },
+  {
     icon: "logo-paypal",
     title: "PayPal",
     desc: "",
@@ -39,7 +47,7 @@ const OPTIONS: SupportOption[] = [
     color: "#003087",
   },
   {
-    icon: "card-outline",
+    icon: "credit-card",
     title: "Gumroad",
     desc: "",
     url: GUMROAD_URL,

@@ -1,5 +1,6 @@
-import { ExternalLink } from "lucide-react";
+import { ArrowSquareOutIcon } from "@phosphor-icons/react";
 import buildInfo from "../build-info.json";
+import pkg from "../../package.json";
 
 export function InfoPanel() {
   const isTauri = typeof window !== "undefined" && !!(window as any).__TAURI__;
@@ -11,7 +12,7 @@ export function InfoPanel() {
         <div className="info-grid">
           <div className="info-row">
             <span className="info-label">Version</span>
-            <span className="info-value">0.5.7</span>
+            <span className="info-value">{pkg.version}</span>
           </div>
           <div className="info-row">
             <span className="info-label">Platform</span>
@@ -39,7 +40,6 @@ export function InfoPanel() {
             <span className="info-label">Commit</span>
             <span className="info-value">
               {buildInfo.shortCommit}
-              {buildInfo.isDirty ? " +" : ""}
             </span>
           </div>
           <div className="info-row">
@@ -64,7 +64,7 @@ export function InfoPanel() {
             rel="noreferrer"
           >
             <span>Source Code</span>
-            <ExternalLink size={14} />
+            <ArrowSquareOutIcon size={14} />
           </a>
           <a
             className="link-row"
@@ -73,7 +73,16 @@ export function InfoPanel() {
             rel="noreferrer"
           >
             <span>Report an Issue</span>
-            <ExternalLink size={14} />
+            <ArrowSquareOutIcon size={14} />
+          </a>
+          <a
+            className="link-row"
+            href="https://curium.design/downloads"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>Other Downloads</span>
+            <ArrowSquareOutIcon size={14} />
           </a>
           <a
             className="link-row"
@@ -82,7 +91,16 @@ export function InfoPanel() {
             rel="noreferrer"
           >
             <span>Follow Nylxar</span>
-            <ExternalLink size={14} />
+            <ArrowSquareOutIcon size={14} />
+          </a>
+          <a
+            className="link-row"
+            href="https://curium.design"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>Visit Website</span>
+            <ArrowSquareOutIcon size={14} />
           </a>
         </div>
       </div>
@@ -94,7 +112,7 @@ export function InfoPanel() {
             letterSpacing: 0.5,
           }}
         >
-          Made with cats · Open source · Free forever
+          Made with cats · Open source
         </p>
         <p
           style={{

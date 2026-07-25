@@ -1,20 +1,20 @@
 import { useEffect, useRef, useMemo } from "react";
 import { gsap } from "gsap";
 import {
-  Sparkles,
-  Heart,
-  TrendingUp,
-  Info,
-  AlertCircle,
-  ShieldCheck,
-  Zap,
-  PlusCircle,
-  List,
-  X as XIcon,
-  ArrowLeftRight,
-  TriangleAlert,
-  MinusCircle,
-} from "lucide-react";
+  SparkleIcon,
+  HeartIcon,
+  TrendUpIcon,
+  InfoIcon,
+  WarningCircleIcon,
+  ShieldCheckIcon,
+  LightningIcon,
+  PlusCircleIcon,
+  ListIcon,
+  XIcon,
+  ArrowsLeftRightIcon,
+  WarningIcon,
+  MinusCircleIcon,
+} from "@phosphor-icons/react";
 import { parseReleaseNotes, type ReleaseSection } from "../utils/release-notes-parser";
 
 const RELEASE_NOTES = `# Release Notes — v0.5.7 (Stable)
@@ -51,24 +51,24 @@ const RELEASE_NOTES = `# Release Notes — v0.5.7 (Stable)
 ## NOTE
 - Upload from gallery feature is not available right now. Curium has moved to a new scanning module for improved performance and detection, but that module hasn't published gallery scanning yet. The feature is already in the main repo — we just need to wait for the next release.`;
 
-const ICON_MAP: Record<string, typeof Sparkles> = {
-  sparkles: Sparkles,
-  heart: Heart,
-  "trending-up": TrendingUp,
-  info: Info,
-  "alert-circle": AlertCircle,
-  "shield-check": ShieldCheck,
-  "shield-checkmark": ShieldCheck,
-  zap: Zap,
-  "plus-circle": PlusCircle,
-  "swap-horizontal": ArrowLeftRight,
-  "alert-triangle": TriangleAlert,
-  "minus-circle": MinusCircle,
-  list: List,
+const ICON_MAP: Record<string, typeof SparkleIcon> = {
+  sparkles: SparkleIcon,
+  heart: HeartIcon,
+  "trending-up": TrendUpIcon,
+  info: InfoIcon,
+  "alert-circle": WarningCircleIcon,
+  "shield-check": ShieldCheckIcon,
+  "shield-checkmark": ShieldCheckIcon,
+  zap: LightningIcon,
+  "plus-circle": PlusCircleIcon,
+  "swap-horizontal": ArrowsLeftRightIcon,
+  "alert-triangle": WarningIcon,
+  "minus-circle": MinusCircleIcon,
+  list: ListIcon,
 };
 
 function SectionIcon({ name }: { name: string }) {
-  const Icon = ICON_MAP[name] || List;
+  const Icon = ICON_MAP[name] || ListIcon;
   return <Icon size={14} />;
 }
 

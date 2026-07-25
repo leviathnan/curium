@@ -84,6 +84,9 @@ import {
   GitCommitIcon,
   XLogoIcon,
   ShapesIcon,
+  CurrencyDollarIcon,
+  CreditCardIcon,
+  BookOpenIcon,
 } from "phosphor-react-native";
 
 const ICON_MAP: Record<string, React.ComponentType<IconProps>> = {
@@ -177,6 +180,9 @@ const ICON_MAP: Record<string, React.ComponentType<IconProps>> = {
   "lock-closed-outline": LockIcon,
   "logo-x": XLogoIcon,
   "shapes-outline": ShapesIcon,
+  "currency-dollar": CurrencyDollarIcon,
+  "credit-card": CreditCardIcon,
+  "book-open-outline": BookOpenIcon,
   "warning": WarningIcon,
 };
 

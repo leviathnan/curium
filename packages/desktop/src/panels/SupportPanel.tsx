@@ -1,21 +1,27 @@
-import { LifeBuoy, Coffee, CreditCard, ExternalLink } from "lucide-react";
+import { LifebuoyIcon, CoffeeIcon, CurrencyDollarIcon, CreditCardIcon, ArrowSquareOutIcon, PaypalLogoIcon } from "@phosphor-icons/react";
 
 export function SupportPanel() {
   const OPTIONS = [
     {
-      icon: Coffee,
+      icon: CoffeeIcon,
       label: "Ko-fi",
       url: "https://ko-fi.com/nylxar",
       color: "#FF5E5B",
     },
     {
-      icon: CreditCard,
+      icon: CurrencyDollarIcon,
+      label: "GitHub Sponsors",
+      url: "https://github.com/sponsors/nylxar",
+      color: "#FF5E5B",
+    },
+    {
+      icon: PaypalLogoIcon,
       label: "PayPal",
       url: "https://www.paypal.com/ncp/payment/DUAR5EJ7A3RV8",
       color: "#003087",
     },
     {
-      icon: CreditCard,
+      icon: CreditCardIcon,
       label: "Gumroad",
       url: "https://nylxar.gumroad.com/coffee",
       color: "#FF90E8",
@@ -40,7 +46,7 @@ export function SupportPanel() {
             margin: "0 auto 12px",
           }}
         >
-          <LifeBuoy size={24} style={{ color: "var(--primary)" }} />
+          <LifebuoyIcon size={24} style={{ color: "var(--primary)" }} />
         </div>
         <div className="section-title" style={{ marginBottom: 4 }}>
           Support Curium
@@ -63,7 +69,7 @@ export function SupportPanel() {
           >
             <opt.icon size={16} style={{ color: opt.color }} />
             <span>{opt.label}</span>
-            <ExternalLink
+            <ArrowSquareOutIcon
               size={14}
               style={{ marginLeft: "auto", opacity: 0.4 }}
             />

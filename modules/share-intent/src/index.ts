@@ -1,3 +1,3 @@
 import { requireNativeModule } from "expo-modules-core";
 
-export default requireNativeModule("HighRefreshRate");
+export default requireNativeModule("ShareIntent");

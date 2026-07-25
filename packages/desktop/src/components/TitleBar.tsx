@@ -1,4 +1,4 @@
-import { Minus, Square, X, Copy } from "lucide-react";
+import { MinusIcon, SquareIcon, XIcon, CopyIcon } from "@phosphor-icons/react";
 import { useState, useCallback, useEffect } from "react";
 import { TextReveal } from "./TextReveal";
 
@@ -38,21 +38,21 @@ function MacTrafficLights() {
         onClick={() => getAppWindow()?.close?.()}
         title="Close"
       >
-        {hovering && <X size={8} strokeWidth={2.5} />}
+        {hovering && <XIcon size={8} />}
       </button>
       <button
         className="traffic-light traffic-light-minimize"
         onClick={() => getAppWindow()?.minimize?.()}
         title="Minimize"
       >
-        {hovering && <Minus size={8} strokeWidth={2.5} />}
+        {hovering && <MinusIcon size={8} />}
       </button>
       <button
         className="traffic-light traffic-light-maximize"
         onClick={() => getAppWindow()?.toggleMaximize?.()}
         title="Maximize"
       >
-        {hovering && <Square size={7} strokeWidth={2.5} />}
+        {hovering && <SquareIcon size={7} />}
       </button>
     </div>
   );
@@ -105,13 +105,13 @@ export function TitleBar() {
       <span className="titlebar-title"><TextReveal text="Curium" per="char" /></span>
       <div className="titlebar-controls">
         <button onClick={minimize} className="titlebar-btn" title="Minimize">
-          <Minus size={14} />
+          <MinusIcon size={14} />
         </button>
         <button onClick={toggleMaximize} className="titlebar-btn" title={isMaximized ? "Restore" : "Maximize"}>
-          {isMaximized ? <Copy size={12} /> : <Square size={11} />}
+          {isMaximized ? <CopyIcon size={12} /> : <SquareIcon size={11} />}
         </button>
         <button onClick={close} className="titlebar-btn titlebar-btn-close" title="Close">
-          <X size={14} />
+          <XIcon size={14} />
         </button>
       </div>
     </div>

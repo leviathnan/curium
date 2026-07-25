@@ -1,4 +1,4 @@
-import { Download, FileImage, Copy } from "lucide-react";
+import { DownloadSimpleIcon, FileImageIcon, CopyIcon } from "@phosphor-icons/react";
 
 interface ExportBarProps {
   svg: string;
@@ -58,13 +58,13 @@ export function ExportBar({ svg, input, onExportSVG, onExportPNG }: ExportBarPro
   return (
     <>
       <button className="btn btn-icon" onClick={downloadSVG} title="Export SVG (Ctrl+S)">
-        <Download size={16} />
+        <DownloadSimpleIcon size={16} />
       </button>
       <button className="btn btn-icon" onClick={downloadPNG} title="Export PNG (Ctrl+Shift+S)">
-        <FileImage size={16} />
+        <FileImageIcon size={16} />
       </button>
       <button className="btn btn-icon" onClick={copyToClipboard} title="Copy Data">
-        <Copy size={16} />
+        <CopyIcon size={16} />
       </button>
     </>
   );

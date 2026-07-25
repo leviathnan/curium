@@ -415,73 +415,22 @@ export default function AboutScreen() {
             index={5}
           />
           <ActionRow
+            icon="book-open-outline"
+            label="License and Credits"
+            sub="Open source libraries"
+            onPress={() => router.push("/licenses")}
+            tintColor={colors.primary}
+            index={6}
+          />
+          <ActionRow
             icon="logo-x"
             label="Follow Nylxar"
             sub={X_URL.replace("https://", "")}
             onPress={() => openLink(X_URL, "X")}
             tintColor={colors.primary}
-            index={0}
+            index={7}
             last
           />
-        </View>
-
-        {/* Privacy section */}
-        <Text
-          style={[
-            styles.sectionTitle,
-            { color: colors.textMuted, fontFamily: Fonts.monoBold },
-          ]}
-        >
-          PRIVACY
-        </Text>
-        <View
-          style={[
-            styles.card,
-            styles.privacyCard,
-            { backgroundColor: colors.surface, borderColor: colors.border },
-          ]}
-        >
-          <View style={styles.privacyItem}>
-            <Icon
-              name="shield-checkmark-outline"
-              size={16}
-              color={colors.success}
-            />
-            <Text
-              style={[
-                styles.privacyText,
-                { color: colors.text, fontFamily: Fonts.mono },
-              ]}
-            >
-              No internet requests. Fully offline.
-            </Text>
-          </View>
-          <View style={styles.privacyItem}>
-            <Icon name="eye-off-outline" size={16} color={colors.success} />
-            <Text
-              style={[
-                styles.privacyText,
-                { color: colors.text, fontFamily: Fonts.mono },
-              ]}
-            >
-              No analytics, no tracking, no telemetry.
-            </Text>
-          </View>
-          <View style={styles.privacyItem}>
-            <Icon
-              name="lock-closed-outline"
-              size={16}
-              color={colors.success}
-            />
-            <Text
-              style={[
-                styles.privacyText,
-                { color: colors.text, fontFamily: Fonts.mono },
-              ]}
-            >
-              All data stays on your device.
-            </Text>
-          </View>
         </View>
 
         {/* Footer */}
