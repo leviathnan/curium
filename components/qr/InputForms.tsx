@@ -1,11 +1,19 @@
-import React from "react";
+import React, { useState, useRef, useCallback } from "react";
 import {
   View,
   Text,
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Pressable,
 } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  runOnJS,
+  Easing,
+} from "react-native-reanimated";
 import {
   URLForm,
   TextForm,
@@ -23,6 +31,7 @@ import { ExpandableField } from "./ExpandableField";
 import { DateTimePicker } from "./DateTimePicker";
 import { URLPresets } from "./URLPresets";
 import { useTheme } from "@/context/ThemeContext";
+import { Icon } from "@/components/ui/Icon";
 
 // At top of InputForms.tsx — add explicit interfaces:
 
@@ -251,6 +260,28 @@ export function SMSFormView({ form, onChange, tintColor }: SMSFormProps) {
 }
 
 export function WiFiFormView({ form, onChange, tintColor }: WiFiFormProps) {
+  const [showPassword, setShowPassword] = useState(false);
+  const { colors } = useTheme();
+  const eyeOpacity = useSharedValue(1);
+
+  const showRef = useRef(false);
+  const doToggle = useCallback(() => {
+    showRef.current = !showRef.current;
+    setShowPassword(showRef.current);
+  }, []);
+
+  const toggle = () => {
+    eyeOpacity.value = withTiming(0, { duration: 80 }, () => {
+      "worklet";
+      runOnJS(doToggle)();
+      eyeOpacity.value = withTiming(1, { duration: 100, easing: Easing.out(Easing.cubic) });
+    });
+  };
+
+  const eyeStyle = useAnimatedStyle(() => ({
+    opacity: eyeOpacity.value,
+  }));
+
   return (
     <View style={{ gap: Spacing.sm }}>
       <ExpandableField
@@ -260,14 +291,55 @@ export function WiFiFormView({ form, onChange, tintColor }: WiFiFormProps) {
         onChange={(v: string) => onChange({ ...form, ssid: v })}
         placeholder="MyHomeWiFi"
       />
-      <ExpandableField
-        label="Password"
-        tintColor={tintColor}
-        value={form.password}
-        onChange={(v: string) => onChange({ ...form, password: v })}
-        placeholder="Wi-Fi password"
-        secureTextEntry
-      />
+      <View style={{ gap: 6 }}>
+        <Text
+          style={[styles.label, { color: colors.textMuted, fontFamily: Fonts.mono }]}
+        >
+          Password
+        </Text>
+        <View style={{ position: "relative" }}>
+          <TextInput
+            style={[
+              styles.input,
+              {
+                backgroundColor: colors.surfaceOffset,
+                borderColor: colors.border,
+                color: colors.text,
+                fontFamily: Fonts.mono,
+                height: 52,
+                paddingRight: 44,
+              },
+            ]}
+            value={form.password}
+            onChangeText={(v: string) => onChange({ ...form, password: v })}
+            placeholder="Wi-Fi password"
+            placeholderTextColor={colors.textFaint}
+            secureTextEntry={!showPassword}
+            autoCapitalize="none"
+            autoCorrect={false}
+            selectionColor={colors.primary + "60"}
+          />
+          <Pressable
+            onPress={toggle}
+            hitSlop={8}
+            style={{
+              position: "absolute",
+              right: 12,
+              top: 0,
+              bottom: 0,
+              justifyContent: "center",
+            }}
+          >
+            <Animated.View style={eyeStyle}>
+              <Icon
+                name={showPassword ? "eye-off-outline" : "eye-outline"}
+                size={18}
+                color={tintColor}
+              />
+            </Animated.View>
+          </Pressable>
+        </View>
+      </View>
       {/* Encryption — segmented control, not expandable */}
       <View style={{ flexDirection: "row", gap: Spacing.sm }}>
         {(["WPA", "WEP", "nopass"] as const).map((enc) => {
