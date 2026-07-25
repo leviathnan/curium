@@ -1,13 +1,13 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
-import { Shield, Palette, Scan, ArrowRight, Heart } from "lucide-react";
+import { ShieldIcon, PaletteIcon, ScanIcon, ArrowRightIcon, HeartIcon } from "@phosphor-icons/react";
 import icon from "../icon.png";
 import { TextReveal } from "./TextReveal";
 
 const FEATURES = [
-  { icon: Shield, text: "Fully offline, zero tracking" },
-  { icon: Palette, text: "Deep customization, logos, themes" },
-  { icon: Scan, text: "Scan, reskin, and re-export any QR" },
+  { icon: ShieldIcon, text: "Fully offline, zero tracking" },
+  { icon: PaletteIcon, text: "Deep customization, logos, themes" },
+  { icon: ScanIcon, text: "Scan, reskin, and re-export any QR" },
 ];
 
 interface WelcomeProps {
@@ -72,10 +72,10 @@ export function Welcome({ onDone }: WelcomeProps) {
         <div ref={btnsRef} className="welcome-btns">
           <button className="welcome-btn-primary" onClick={handleDone}>
             Get Started
-            <ArrowRight size={16} />
+            <ArrowRightIcon size={16} />
           </button>
           <button className="welcome-btn-secondary" onClick={handleDone}>
-            <Heart size={14} />
+            <HeartIcon size={14} />
             Support the project
           </button>
         </div>
