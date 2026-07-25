@@ -433,65 +433,6 @@ export default function AboutScreen() {
           />
         </View>
 
-        {/* Privacy section */}
-        <Text
-          style={[
-            styles.sectionTitle,
-            { color: colors.textMuted, fontFamily: Fonts.monoBold },
-          ]}
-        >
-          PRIVACY
-        </Text>
-        <View
-          style={[
-            styles.card,
-            styles.privacyCard,
-            { backgroundColor: colors.surface, borderColor: colors.border },
-          ]}
-        >
-          <View style={styles.privacyItem}>
-            <Icon
-              name="shield-checkmark-outline"
-              size={16}
-              color={colors.success}
-            />
-            <Text
-              style={[
-                styles.privacyText,
-                { color: colors.text, fontFamily: Fonts.mono },
-              ]}
-            >
-              No internet requests. Fully offline.
-            </Text>
-          </View>
-          <View style={styles.privacyItem}>
-            <Icon name="eye-off-outline" size={16} color={colors.success} />
-            <Text
-              style={[
-                styles.privacyText,
-                { color: colors.text, fontFamily: Fonts.mono },
-              ]}
-            >
-              No analytics, no tracking, no telemetry.
-            </Text>
-          </View>
-          <View style={styles.privacyItem}>
-            <Icon
-              name="lock-closed-outline"
-              size={16}
-              color={colors.success}
-            />
-            <Text
-              style={[
-                styles.privacyText,
-                { color: colors.text, fontFamily: Fonts.mono },
-              ]}
-            >
-              All data stays on your device.
-            </Text>
-          </View>
-        </View>
-
         {/* Footer */}
         <View style={styles.footer}>
           <Text
