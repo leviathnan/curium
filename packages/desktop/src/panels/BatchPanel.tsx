@@ -1,5 +1,5 @@
 import { useRef, useCallback } from "react";
-import { Shuffle } from "lucide-react";
+import { ShuffleIcon } from "@phosphor-icons/react";
 
 interface BatchEntry {
   id: string;
@@ -93,7 +93,7 @@ export function BatchPanel({
             <span className="history-count">({entries.length})</span>
           </div>
           <button className="btn btn-icon" onClick={onShuffleStyles} title="Shuffle styles">
-            <Shuffle size={14} />
+            <ShuffleIcon size={14} />
           </button>
         </div>
         <textarea
