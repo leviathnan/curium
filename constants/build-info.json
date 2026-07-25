@@ -1,9 +1,9 @@
 {
-  "commit": "b7b50d3afdf1d05e42fcf23622c6a7b6f11932ab",
-  "shortCommit": "b7b50d3",
+  "commit": "5cb274baec29c438bffdf9835943a4b004cde413",
+  "shortCommit": "5cb274b",
   "branch": "preview",
-  "commitDate": "2026-07-24 12:31:38 +0300",
-  "commitMessage": "update: eas.json",
+  "commitDate": "2026-07-25 21:15:15 +0300",
+  "commitMessage": "update: pnpm-lock.yaml",
   "isDirty": true,
-  "buildDate": "2026-07-24T10:00:34.419Z"
+  "buildDate": "2026-07-25T18:31:16.702Z"
 }

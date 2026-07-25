@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   useWindowDimensions,
+  Platform,
 } from "react-native";
 import Animated, {
   useSharedValue,
@@ -13,6 +14,7 @@ import Animated, {
   runOnJS,
   Easing,
 } from "react-native-reanimated";
+import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
 import { captureRef } from "react-native-view-shot";
 import { File } from "expo-file-system";
@@ -43,7 +45,8 @@ const PIXEL_SHAPES: QRStyle["pixelShape"][] = [
   "vertical-line", "horizontal-line",
 ];
 const NONE_PROBABILITY = 0.1;
-const OVERLAY_EASING = Easing.bezier(0.175, 0.885, 0.32, 1.1);
+const ENTRANCE_CURVE = Easing.bezier(0.16, 1, 0.3, 1);
+const EXIT_CURVE = Easing.bezier(0.4, 0, 1, 1);
 
 interface Props {
   content: SharedContent;
@@ -98,21 +101,21 @@ export function ShareOverlay({ content, onDismiss }: Props) {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, []);
 
-  // A single progress value keeps the backdrop and card visually in sync.
   const enter = useSharedValue(0);
 
   useEffect(() => {
-    enter.value = withTiming(1, {
-      duration: 220,
-      easing: OVERLAY_EASING,
-    });
+    enter.value = withTiming(1, { duration: 260, easing: ENTRANCE_CURVE });
   }, []);
 
   const dismiss = useCallback(() => {
-    enter.value = withTiming(0, { duration: 160, easing: Easing.in(Easing.cubic) }, (finished) => {
-      "worklet";
-      if (finished) runOnJS(onDismiss)();
-    });
+    enter.value = withTiming(
+      0,
+      { duration: 160, easing: EXIT_CURVE },
+      (finished) => {
+        "worklet";
+        if (finished) runOnJS(onDismiss)();
+      },
+    );
   }, [onDismiss]);
 
   const backdropStyle = useAnimatedStyle(() => ({
@@ -164,6 +167,12 @@ export function ShareOverlay({ content, onDismiss }: Props) {
 
   return (
     <Animated.View style={[styles.backdrop, backdropStyle]}>
+      <BlurView
+        intensity={80}
+        tint={isDark ? "dark" : "light"}
+        style={StyleSheet.absoluteFill}
+      />
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: isDark ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.2)" }]} />
       <TouchableOpacity
         style={StyleSheet.absoluteFill}
         activeOpacity={1}
@@ -330,7 +339,6 @@ export function ShareOverlay({ content, onDismiss }: Props) {
 const styles = StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: "rgba(0,0,0,0.55)",
     justifyContent: "center",
     alignItems: "center",
     padding: Spacing.xl,
