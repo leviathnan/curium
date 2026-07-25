@@ -1,4 +1,11 @@
+import { useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withDelay,
+  withTiming,
+} from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import { Icon } from "@/components/ui/Icon";
 import { useTheme } from "@/context/ThemeContext";
@@ -41,6 +48,49 @@ const DEPS = [
   { name: "react-native-qrcode-styled", license: "MIT", url: "https://github.com/nicklaessson/react-native-qrcode-styled" },
   { name: "react-native-qrcode-svg", license: "MIT", url: "https://github.com/nicklaessson/react-native-qrcode-svg" },
 ];
+
+function AnimatedDepRow({
+  dep,
+  index,
+  colors,
+  last,
+}: {
+  dep: (typeof DEPS)[number];
+  index: number;
+  colors: any;
+  last: boolean;
+}) {
+  const opacity = useSharedValue(0);
+  useEffect(() => {
+    opacity.value = withDelay(60 + index * 20, withTiming(1, { duration: 280 }));
+  }, []);
+  const animStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
+
+  return (
+    <Animated.View
+      style={[
+        styles.depRow,
+        { borderBottomColor: colors.border },
+        animStyle,
+        last && { borderBottomWidth: 0 },
+      ]}
+    >
+      <View style={styles.depInfo}>
+        <Text
+          style={[styles.depName, { color: colors.text, fontFamily: Fonts.mono }]}
+          numberOfLines={1}
+        >
+          {dep.name}
+        </Text>
+        <Text
+          style={[styles.depLicense, { color: colors.textFaint, fontFamily: Fonts.mono }]}
+        >
+          {dep.license}
+        </Text>
+      </View>
+    </Animated.View>
+  );
+}
 
 export default function LicensesScreen() {
   const { colors } = useTheme();
@@ -112,28 +162,13 @@ export default function LicensesScreen() {
             DEPENDENCIES
           </Text>
           {DEPS.map((dep, i) => (
-            <View
+            <AnimatedDepRow
               key={dep.name}
-              style={[
-                styles.depRow,
-                { borderBottomColor: colors.border },
-                i === DEPS.length - 1 && { borderBottomWidth: 0 },
-              ]}
-            >
-              <View style={styles.depInfo}>
-                <Text
-                  style={[styles.depName, { color: colors.text, fontFamily: Fonts.mono }]}
-                  numberOfLines={1}
-                >
-                  {dep.name}
-                </Text>
-                <Text
-                  style={[styles.depLicense, { color: colors.textFaint, fontFamily: Fonts.mono }]}
-                >
-                  {dep.license}
-                </Text>
-              </View>
-            </View>
+              dep={dep}
+              index={i}
+              colors={colors}
+              last={i === DEPS.length - 1}
+            />
           ))}
         </View>
       </ScrollView>
