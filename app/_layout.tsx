@@ -172,6 +172,10 @@ export default function RootLayout() {
                         options={{ animation: "simple_push", animationDuration: 200 }}
                       />
                       <Stack.Screen
+                        name="licenses"
+                        options={{ animation: "simple_push", animationDuration: 200 }}
+                      />
+                      <Stack.Screen
                         name="about"
                         options={{ animation: "simple_push", animationDuration: 200 }}
                       />
