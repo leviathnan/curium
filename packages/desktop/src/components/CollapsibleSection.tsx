@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { ChevronRight } from "lucide-react";
+import { CaretRightIcon } from "@phosphor-icons/react";
 
 interface CollapsibleSectionProps {
   title: string;
@@ -38,7 +38,7 @@ export function CollapsibleSection({ title, defaultOpen = true, count, children 
         <div className="section-title" style={{ marginBottom: 0 }}>
           {title}{count !== undefined ? ` (${count})` : ""}
         </div>
-        <ChevronRight size={14} className={`section-chevron ${open ? "open" : ""}`} />
+        <CaretRightIcon size={14} className={`section-chevron ${open ? "open" : ""}`} />
       </div>
       <div
         ref={bodyRef}
