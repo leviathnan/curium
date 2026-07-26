@@ -56,6 +56,7 @@ export default function App() {
     "dark" | "light" | "amoled"
   >("dark");
   const isTauri = useIsTauri();
+  const showTitleBar = isTauri || typeof window !== "undefined" && new URLSearchParams(window.location.search).has("titlebar");
   const shuffleBtnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -546,7 +547,7 @@ export default function App() {
     <div
       className="app"
       data-theme={resolvedTheme}
-      {...(isTauri ? { "data-tauri": "" } : {})}
+      {...(showTitleBar ? { "data-tauri": "" } : {})}
     >
       <Splash />
       {(onboarding === "whatsnew" || onboarding === "welcome") && (
@@ -565,7 +566,7 @@ export default function App() {
           }}
         />
       )}
-      {isTauri && onboarding === "done" && <TitleBar />}
+      {showTitleBar && onboarding === "done" && <TitleBar />}
       <div className="tab-bar">
         <div className="tab-bar-top">
           {TOP_TABS.map((tab) => {
@@ -600,9 +601,11 @@ export default function App() {
       </div>
 
       <div className="side-panel" ref={sidePanelRef}>
-        <div className="app-brand">
-          <span className="app-brand-name"><TextReveal text="Curium" per="char" /></span>
-        </div>
+        {!showTitleBar && (
+          <div className="app-brand">
+            <span className="app-brand-name"><TextReveal text="Curium" per="char" /></span>
+          </div>
+        )}
         {renderTabContent()}
       </div>
 
