@@ -81,12 +81,12 @@ export function InfoPanel() {
             target="_blank"
             rel="noreferrer"
           >
-            <span>License (AGPL-3.0)</span>
+            <span>License</span>
             <ArrowSquareOutIcon size={14} />
           </a>
           <a
             className="link-row"
-            href="https://curium.design/downloads"
+            href="https://github.com/nylxar/curium/releases"
             target="_blank"
             rel="noreferrer"
           >
@@ -104,7 +104,7 @@ export function InfoPanel() {
           </a>
           <a
             className="link-row"
-            href="https://curium.design"
+            href="https://github.com/nylxar/curium"
             target="_blank"
             rel="noreferrer"
           >
