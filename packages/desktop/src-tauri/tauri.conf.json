@@ -29,6 +29,8 @@
     "active": true,
     "createUpdaterArtifacts": false,
     "targets": "all",
+    "copyright": "Copyright © 2026 Nylxar",
+    "homepage": "https://curium.design",
     "licenseFile": "../../../LICENSE",
     "icon": [
       "icons/32x32.png",
@@ -40,7 +42,7 @@
     "windows": {
       "nsis": {
         "installerIcon": "icons/icon.ico",
-        "installMode": "both"
+        "installMode": "currentUser"
       },
       "webviewInstallMode": {
         "type": "embedBootstrapper",
