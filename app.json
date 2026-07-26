@@ -2,7 +2,7 @@
   "expo": {
     "name": "Curium",
     "slug": "Curium",
-    "version": "0.6.0",
+    "version": "0.6.1",
     "description": "Privacy-first QR code generator, customizer, and scanner. No analytics. No network. Just your codes.",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
