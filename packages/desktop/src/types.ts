@@ -10,6 +10,7 @@ import {
   InfoIcon,
   LifebuoyIcon,
   CpuIcon,
+  HeartIcon,
 } from "@phosphor-icons/react";
 
 export interface FormState {
@@ -66,7 +67,8 @@ export type TabId =
   | "settings"
   | "about"
   | "info"
-  | "support";
+  | "support"
+  | "credits";
 
 export const QR_TYPES: { id: QRType; label: string }[] = [
   { id: "url", label: "URL" },
@@ -95,4 +97,5 @@ export const BOTTOM_TABS: { id: TabId; icon: typeof ClockCounterClockwiseIcon; l
   { id: "about", icon: InfoIcon, label: "About" },
   { id: "info", icon: CpuIcon, label: "Info" },
   { id: "support", icon: LifebuoyIcon, label: "Support" },
+  { id: "credits", icon: HeartIcon, label: "Credits" },
 ];
