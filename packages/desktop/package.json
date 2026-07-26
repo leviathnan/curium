@@ -1,7 +1,28 @@
 {
   "name": "@curium/desktop",
   "version": "0.6.0",
+  "description": "Privacy-first QR code generator, customizer, and scanner.",
+  "license": "AGPL-3.0",
+  "author": "Nylxar",
   "type": "module",
+  "keywords": [
+    "qr-code",
+    "qr-generator",
+    "privacy",
+    "offline",
+    "open-source",
+    "tauri",
+    "react"
+  ],
+  "homepage": "https://curium.design",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nylxar/curium",
+    "directory": "packages/desktop"
+  },
+  "bugs": {
+    "url": "https://github.com/nylxar/curium/issues"
+  },
   "scripts": {
     "dev": "rsbuild dev",
     "build": "tsc -b && rsbuild build",
