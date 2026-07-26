@@ -1,6 +1,5 @@
 import { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
-import icon from "../icon.png";
 
 export function Splash() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -64,7 +63,7 @@ export function Splash() {
 
   return (
     <div ref={containerRef} className="splash">
-      <img ref={iconRef} src={icon} alt="Curium" className="splash-icon" />
+      <img ref={iconRef} src="./icon.png" alt="Curium" className="splash-icon" />
       <div ref={textRef} className="splash-text">Curium</div>
     </div>
   );
