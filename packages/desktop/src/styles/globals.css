@@ -82,11 +82,8 @@ body {
   height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   padding: 32px;
-}
-
-.welcome-spacer {
-  flex: 1;
 }
 
 .welcome-logo-wrap {
