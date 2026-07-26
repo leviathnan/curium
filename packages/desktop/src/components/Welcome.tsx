@@ -44,8 +44,6 @@ export function Welcome({ onDone }: WelcomeProps) {
   return (
     <div ref={rootRef} className="welcome-screen">
       <div className="welcome-content">
-        <div className="welcome-spacer" />
-
         <div ref={logoRef} className="welcome-logo-wrap">
           <img src={icon} alt="Curium" className="welcome-logo" />
         </div>
