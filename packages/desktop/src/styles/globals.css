@@ -33,6 +33,19 @@ body {
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+}
+
+::selection {
+  background: var(--selection-bg);
+  color: var(--selection-text);
+}
+
+::-moz-selection {
+  background: var(--selection-bg);
+  color: var(--selection-text);
 }
 
 /* ── Splash Screen ───────────────────────────────────────────────────── */
@@ -1394,6 +1407,7 @@ textarea.input {
   text-align: center;
   transition: border-color 0.12s ease;
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .rgb-input::-webkit-outer-spin-button,
@@ -1705,5 +1719,3 @@ textarea.input {
     min-width: 240px;
   }
 }
-
-
