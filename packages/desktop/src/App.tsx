@@ -35,6 +35,7 @@ import { SettingsPanel } from "./panels/SettingsPanel";
 import { AboutPanel } from "./panels/AboutPanel";
 import { InfoPanel } from "./panels/InfoPanel";
 import { SupportPanel } from "./panels/SupportPanel";
+import { CreditsPanel } from "./panels/CreditsPanel";
 
 export default function App() {
   const [theme, setTheme] = useState<"dark" | "light" | "amoled" | "system">(
@@ -538,6 +539,8 @@ export default function App() {
         return <InfoPanel />;
       case "support":
         return <SupportPanel />;
+      case "credits":
+        return <CreditsPanel />;
       default:
         return null;
     }
