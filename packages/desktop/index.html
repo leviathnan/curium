@@ -4,11 +4,36 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="dark light" />
-    <title>Curium</title>
+    <title>Curium ● Privacy-First QR Code Generator</title>
+    <meta name="description" content="Generate, customize, and scan QR codes fully offline. No analytics. No tracking. Open source under AGPL-3.0." />
+    <meta name="keywords" content="qr code generator, qr code customizer, qr scanner, privacy, offline, open source" />
+    <meta name="author" content="Nylxar" />
+    <meta name="theme-color" content="#0d0d0f" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f5f0e8" media="(prefers-color-scheme: light)" />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Curium" />
+    <meta property="og:title" content="Curium — Privacy-First QR Code Generator" />
+    <meta property="og:description" content="Generate, customize, and scan QR codes fully offline. No analytics. No tracking. Open source." />
+    <meta property="og:url" content="https://curium.design" />
+    <meta property="og:image" content="https://curium.design/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Curium — Privacy-First QR Code Generator" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Curium — Privacy-First QR Code Generator" />
+    <meta name="twitter:description" content="Generate, customize, and scan QR codes fully offline. No analytics. No tracking. Open source." />
+    <meta name="twitter:image" content="https://curium.design/og.png" />
+    <link rel="icon" href="./favicon.ico" sizes="48x48" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="icon" type="image/png" sizes="96x96" href="./favicon-96x96.png" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="manifest" href="./site.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
-    <link rel="preload" href="./src/icon.png" as="image" />
+    <link rel="preload" href="./icon.png" as="image" />
     <style>
       :root { --font-mono: "IBM Plex Mono", monospace; color-scheme: dark light; }
       :root, [data-theme="dark"] { --bg: #0d0d0f; --surface: #161618; --surface-offset: #1e1e21; --border: #2a2a2e; --text: #f5f0e8; --text-muted: #b0a99e; --text-faint: #7a756d; --primary: #f5f0e8; --primary-bg: #f5f0e822; --success: #7ad88a; --error: #ff6b6b; --warning: #f5c46a; --selection-bg: #f5f0e833; --selection-text: #f5f0e8; }
@@ -44,7 +69,7 @@
           var splash = document.getElementById('curium-splash');
           if (splash) splash.classList.add('loaded');
         };
-        img.src = './src/icon.png';
+        img.src = './icon.png';
       })();
     </script>
   </head>
@@ -52,7 +77,7 @@
     <div id="root"></div>
     <div id="curium-splash">
       <div id="curium-splash-content">
-        <img id="curium-splash-img" src="./src/icon.png" alt="" />
+        <img id="curium-splash-img" src="./icon.png" alt="" />
         <span>Curium</span>
       </div>
     </div>
