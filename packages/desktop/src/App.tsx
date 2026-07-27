@@ -142,6 +142,7 @@ export default function App() {
   const [batchInput, setBatchInput] = useState("");
   const [batchExporting, setBatchExporting] = useState(false);
   const [batchStyles, setBatchStyles] = useState<QRStyle[]>([]);
+  const [importedNames, setImportedNames] = useState<Map<string, string>>(new Map());
 
   const generateRandomStyles = useCallback((count: number, base: QRStyle) => {
     if (count === 0) return [];
@@ -174,28 +175,48 @@ export default function App() {
     const lines = batchInput.split("\n").map((l) => l.trim()).filter(Boolean);
     return lines.map((data, i) => ({
       id: `${i}-${data}`,
-      name: `qr-${i + 1}`,
+      name: importedNames.get(data) ?? `qr-${i + 1}`,
       data,
     }));
-  }, [batchInput]);
+  }, [batchInput, importedNames]);
 
-  const prevBatchCount = useRef(0);
+  const prevBatchIds = useRef<string[]>([]);
   useEffect(() => {
-    const count = batchEntries.length;
-    if (count === 0) {
+    const ids = batchEntries.map((e) => e.id);
+    const prevIds = prevBatchIds.current;
+
+    if (ids.length === 0) {
       setBatchStyles([]);
-      prevBatchCount.current = 0;
+      prevBatchIds.current = ids;
       return;
     }
-    if (count > prevBatchCount.current) {
-      const added = count - prevBatchCount.current;
-      const newStyles = generateRandomStyles(added, qrStyle);
-      setBatchStyles((prev) => [...prev, ...newStyles]);
-    } else if (count < prevBatchCount.current) {
-      setBatchStyles((prev) => prev.slice(0, count));
+
+    const prevSet = new Set(prevIds);
+    const currSet = new Set(ids);
+
+    // Check if only additions happened (all previous IDs still present, in same order)
+    const onlyAdded =
+      prevIds.length <= ids.length &&
+      prevIds.every((id, i) => id === ids[i]);
+
+    if (onlyAdded) {
+      const added = ids.length - prevIds.length;
+      if (added > 0) {
+        const newStyles = generateRandomStyles(added, qrStyle);
+        setBatchStyles((prev) => [...prev, ...newStyles]);
+      }
+    } else {
+      // Deletion or reorder — rebuild styles aligned to current entries
+      setBatchStyles((prev) =>
+        ids.map((id, i) => {
+          const oldIdx = prevIds.indexOf(id);
+          return oldIdx >= 0 ? prev[oldIdx] : generateRandomStyles(1, qrStyle)[0];
+        }),
+      );
     }
-    prevBatchCount.current = count;
-  }, [batchEntries.length, generateRandomStyles, qrStyle]);
+
+    prevBatchIds.current = ids;
+  }, [batchEntries, generateRandomStyles, qrStyle]);
 
   const batchSvgs = useMemo(() => {
     return batchEntries.map((e, i) => ({
@@ -268,6 +289,9 @@ export default function App() {
 
   const handleBatchCSVImport = useCallback((imported: BatchEntry[]) => {
     const lines = imported.map((e) => e.data);
+    const names = new Map<string, string>();
+    imported.forEach((e) => { if (e.name) names.set(e.data, e.name); });
+    setImportedNames(names);
     setBatchInput(lines.join("\n"));
   }, []);
 
