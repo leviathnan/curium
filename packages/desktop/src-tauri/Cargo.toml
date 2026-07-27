@@ -1,6 +1,6 @@
 [package]
 name = "curium"
-version = "0.6.3"
+version = "0.6.4"
 description = "Modern QR Code customizer and generator"
 authors = ["Curium"]
 edition = "2021"

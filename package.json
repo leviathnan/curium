@@ -1,6 +1,6 @@
 {
   "name": "curium",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "license": "AGPL-3.0",
   "packageManager": "pnpm@11.11.0",
   "main": "expo-router/entry",
