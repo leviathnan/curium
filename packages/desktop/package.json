@@ -1,6 +1,6 @@
 {
   "name": "@curium/desktop",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "Privacy-first QR code generator, customizer, and scanner.",
   "license": "AGPL-3.0",
   "author": "Nylxar",
