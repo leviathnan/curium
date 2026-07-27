@@ -112,7 +112,10 @@ export default function App() {
   // Load persisted data on mount
   useEffect(() => {
     loadTemplates().then(setTemplates).catch(() => {});
-    loadHistory().then(setHistory).catch(() => {});
+    loadHistory().then((data) => {
+      setHistory(data);
+      loadedRef.current = true;
+    }).catch(() => { loadedRef.current = true; });
   }, []);
   const skipHistorySave = useRef(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -120,6 +123,27 @@ export default function App() {
   const [batchInput, setBatchInput] = useState("");
   const [batchExporting, setBatchExporting] = useState(false);
   const [batchStyles, setBatchStyles] = useState<QRStyle[]>([]);
+
+  const generateRandomStyles = useCallback((count: number, base: QRStyle) => {
+    if (count === 0) return [];
+    return Array.from({ length: count }, () => {
+      const r = QR_COLORS[Math.floor(Math.random() * QR_COLORS.length)];
+      const eye = SHUFFLE_EYES[Math.floor(Math.random() * SHUFFLE_EYES.length)];
+      const pupil = SHUFFLE_PUPILS[Math.floor(Math.random() * SHUFFLE_PUPILS.length)];
+      const pixel = SHUFFLE_PIXELS[Math.floor(Math.random() * SHUFFLE_PIXELS.length)];
+      return {
+        ...base,
+        colorId: r.id,
+        fgColor: r.fg,
+        bgColor: r.bg,
+        eyeColor: r.fg,
+        pupilColor: r.fg,
+        eyeShape: eye,
+        pupilShape: pupil,
+        pixelShape: pixel,
+      };
+    });
+  }, []);
 
   interface BatchEntry {
     id: string;
@@ -135,6 +159,24 @@ export default function App() {
       data,
     }));
   }, [batchInput]);
+
+  const prevBatchCount = useRef(0);
+  useEffect(() => {
+    const count = batchEntries.length;
+    if (count === 0) {
+      setBatchStyles([]);
+      prevBatchCount.current = 0;
+      return;
+    }
+    if (count > prevBatchCount.current) {
+      const added = count - prevBatchCount.current;
+      const newStyles = generateRandomStyles(added, qrStyle);
+      setBatchStyles((prev) => [...prev, ...newStyles]);
+    } else if (count < prevBatchCount.current) {
+      setBatchStyles((prev) => prev.slice(0, count));
+    }
+    prevBatchCount.current = count;
+  }, [batchEntries.length, generateRandomStyles, qrStyle]);
 
   const batchSvgs = useMemo(() => {
     return batchEntries.map((e, i) => ({
@@ -211,29 +253,9 @@ export default function App() {
   }, []);
 
   const handleBatchStyleShuffle = useCallback(() => {
-    const count = batchEntries.length;
-    if (count === 0) return;
-    const styles: QRStyle[] = Array.from({ length: count }, () => {
-      const r = QR_COLORS[Math.floor(Math.random() * QR_COLORS.length)];
-      const eye = SHUFFLE_EYES[Math.floor(Math.random() * SHUFFLE_EYES.length)];
-      const pupil =
-        SHUFFLE_PUPILS[Math.floor(Math.random() * SHUFFLE_PUPILS.length)];
-      const pixel =
-        SHUFFLE_PIXELS[Math.floor(Math.random() * SHUFFLE_PIXELS.length)];
-      return {
-        ...qrStyle,
-        colorId: r.id,
-        fgColor: r.fg,
-        bgColor: r.bg,
-        eyeColor: r.fg,
-        pupilColor: r.fg,
-        eyeShape: eye,
-        pupilShape: pupil,
-        pixelShape: pixel,
-      };
-    });
-    setBatchStyles(styles);
-  }, [batchEntries.length, qrStyle]);
+    if (batchEntries.length === 0) return;
+    setBatchStyles(generateRandomStyles(batchEntries.length, qrStyle));
+  }, [batchEntries.length, generateRandomStyles, qrStyle]);
 
   const qrValue = useMemo(
     () => encodeQR(activeType, forms),
@@ -348,7 +370,9 @@ export default function App() {
     };
   }, [svg, qrValue, qrStyle]);
 
+  const loadedRef = useRef(false);
   useEffect(() => {
+    if (!loadedRef.current) return;
     try {
       saveHistoryToStorage(history);
     } catch {}
