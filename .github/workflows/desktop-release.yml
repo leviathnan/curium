@@ -163,14 +163,18 @@ jobs:
           VERSION="${TAG#v}"
           REPO="${{ github.repository }}"
 
-          # Check if release exists (created by Android workflow)
-          if ! gh release view "$TAG" &>/dev/null; then
-            echo "Release $TAG not found — creating it now"
-            gh release create "$TAG" \
-              --title "Curium $TAG" \
-              --generate-notes \
-              --draft=true
-          fi
+          # Wait for Android workflow to create the release (up to 90 min)
+          WAITED=0
+          while ! gh release view "$TAG" &>/dev/null; do
+            if [ "$WAITED" -ge 5400 ]; then
+              echo "Timed out waiting for release $TAG"
+              exit 1
+            fi
+            echo "Waiting for release $TAG... (${WAITED}s)"
+            sleep 30
+            WAITED=$((WAITED + 30))
+          done
+          echo "Release $TAG found"
 
           # Upload all desktop artifacts to the release
           shopt -s nullglob
