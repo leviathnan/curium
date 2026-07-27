@@ -962,6 +962,7 @@ textarea.input {
 .list-item:nth-child(8) { animation-delay: 0.21s; }
 .list-item:nth-child(9) { animation-delay: 0.24s; }
 .list-item:nth-child(10) { animation-delay: 0.27s; }
+.list-item:nth-child(n+11) { animation-delay: 0.3s; }
 
 @keyframes list-item-in {
   from {
@@ -1524,16 +1525,7 @@ textarea.input {
   animation: batch-item-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.batch-item:nth-child(1) { animation-delay: 0s; }
-.batch-item:nth-child(2) { animation-delay: 0.03s; }
-.batch-item:nth-child(3) { animation-delay: 0.06s; }
-.batch-item:nth-child(4) { animation-delay: 0.09s; }
-.batch-item:nth-child(5) { animation-delay: 0.12s; }
-.batch-item:nth-child(6) { animation-delay: 0.15s; }
-.batch-item:nth-child(7) { animation-delay: 0.18s; }
-.batch-item:nth-child(8) { animation-delay: 0.21s; }
-.batch-item:nth-child(9) { animation-delay: 0.24s; }
-.batch-item:nth-child(10) { animation-delay: 0.27s; }
+.batch-item:nth-child(n+1) { animation-delay: 0.3s; }
 
 @keyframes batch-item-in {
   from {
