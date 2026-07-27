@@ -11,6 +11,9 @@ importers:
 
   .:
     dependencies:
+      '@curium/shared':
+        specifier: workspace:*
+        version: link:packages/shared
       '@expo/metro-runtime':
         specifier: ^57.0.7
         version: 57.0.7(@expo/log-box@57.0.1)(expo@57.0.8)(react-dom@19.2.3(react@19.2.3))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.16)(react@19.2.3))(react@19.2.3)
