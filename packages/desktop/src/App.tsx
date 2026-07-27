@@ -14,13 +14,12 @@ import { StylePanel } from "./panels/StylePanel";
 import { ExportBar } from "./components/ExportBar";
 import { TitleBar, useIsTauri } from "./components/TitleBar";
 import { ConfirmDialog } from "./components/ConfirmDialog";
-import { Splash } from "./components/Splash";
+import { gsap } from "gsap";
 import { Welcome } from "./components/Welcome";
 import { WhatsNew } from "./components/WhatsNew";
 import { TextReveal } from "./components/TextReveal";
 import { BatchPanel } from "./panels/BatchPanel";
 import { animateThemeTransition, bounceButton } from "./utils/animations";
-import { gsap } from "gsap";
 
 import type { FormState, Template, HistoryEntry, TabId } from "./types";
 import { DEFAULT_FORMS, TOP_TABS, BOTTOM_TABS } from "./types";
@@ -35,6 +34,7 @@ import { SettingsPanel } from "./panels/SettingsPanel";
 import { AboutPanel } from "./panels/AboutPanel";
 import { InfoPanel } from "./panels/InfoPanel";
 import { SupportPanel } from "./panels/SupportPanel";
+import { CreditsPanel } from "./panels/CreditsPanel";
 
 export default function App() {
   const [theme, setTheme] = useState<"dark" | "light" | "amoled" | "system">(
@@ -56,6 +56,7 @@ export default function App() {
     "dark" | "light" | "amoled"
   >("dark");
   const isTauri = useIsTauri();
+  const showTitleBar = isTauri || typeof window !== "undefined" && new URLSearchParams(window.location.search).has("titlebar");
   const shuffleBtnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -69,6 +70,26 @@ export default function App() {
     mq.addEventListener("change", resolve);
     return () => mq.removeEventListener("change", resolve);
   }, [theme]);
+
+  useEffect(() => {
+    const splash = document.getElementById("curium-splash");
+    if (!splash) return;
+    const content = splash.querySelector<HTMLElement>("#curium-splash-content");
+    const img = splash.querySelector<HTMLElement>("#curium-splash-img");
+
+    gsap.set(splash, { opacity: 1 });
+
+    const tl = gsap.timeline({ delay: 0.6 });
+    if (img) {
+      tl.to(img, { scale: 1.08, rotate: 4, duration: 0.3, ease: "power2.out" })
+        .to(img, { scale: 0.95, rotate: 0, duration: 0.25, ease: "power2.in" });
+    }
+    if (content) {
+      tl.to(content, { opacity: 0, y: -8, duration: 0.35, ease: "power3.in" }, "-=0.15");
+    }
+    tl.to(splash, { opacity: 0, duration: 0.3, ease: "power2.inOut" }, "-=0.1")
+      .call(() => splash.remove());
+  }, []);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", resolvedTheme);
@@ -110,7 +131,10 @@ export default function App() {
   // Load persisted data on mount
   useEffect(() => {
     loadTemplates().then(setTemplates).catch(() => {});
-    loadHistory().then(setHistory).catch(() => {});
+    loadHistory().then((data) => {
+      setHistory(data);
+      loadedRef.current = true;
+    }).catch(() => { loadedRef.current = true; });
   }, []);
   const skipHistorySave = useRef(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -118,6 +142,28 @@ export default function App() {
   const [batchInput, setBatchInput] = useState("");
   const [batchExporting, setBatchExporting] = useState(false);
   const [batchStyles, setBatchStyles] = useState<QRStyle[]>([]);
+  const [importedNames, setImportedNames] = useState<{ data: string; name: string }[]>([]);
+
+  const generateRandomStyles = useCallback((count: number, base: QRStyle) => {
+    if (count === 0) return [];
+    return Array.from({ length: count }, () => {
+      const r = QR_COLORS[Math.floor(Math.random() * QR_COLORS.length)];
+      const eye = SHUFFLE_EYES[Math.floor(Math.random() * SHUFFLE_EYES.length)];
+      const pupil = SHUFFLE_PUPILS[Math.floor(Math.random() * SHUFFLE_PUPILS.length)];
+      const pixel = SHUFFLE_PIXELS[Math.floor(Math.random() * SHUFFLE_PIXELS.length)];
+      return {
+        ...base,
+        colorId: r.id,
+        fgColor: r.fg,
+        bgColor: r.bg,
+        eyeColor: r.fg,
+        pupilColor: r.fg,
+        eyeShape: eye,
+        pupilShape: pupil,
+        pixelShape: pixel,
+      };
+    });
+  }, []);
 
   interface BatchEntry {
     id: string;
@@ -127,12 +173,58 @@ export default function App() {
 
   const batchEntries = useMemo<BatchEntry[]>(() => {
     const lines = batchInput.split("\n").map((l) => l.trim()).filter(Boolean);
-    return lines.map((data, i) => ({
-      id: `${i}-${data}`,
-      name: `qr-${i + 1}`,
-      data,
-    }));
-  }, [batchInput]);
+    // Consume imported names in order, matching by data content.
+    // Handles duplicates by queuing names per data value.
+    const nameQueue = new Map<string, string[]>();
+    importedNames.forEach((n) => {
+      const q = nameQueue.get(n.data);
+      if (q) q.push(n.name);
+      else nameQueue.set(n.data, [n.name]);
+    });
+    return lines.map((data, i) => {
+      const q = nameQueue.get(data);
+      const name = q && q.length > 0 ? q.shift()! : `qr-${i + 1}`;
+      return { id: `${i}-${data}`, name, data };
+    });
+  }, [batchInput, importedNames]);
+
+  const prevBatchIds = useRef<string[]>([]);
+  useEffect(() => {
+    const ids = batchEntries.map((e) => e.id);
+    const prevIds = prevBatchIds.current;
+
+    if (ids.length === 0) {
+      setBatchStyles([]);
+      prevBatchIds.current = ids;
+      return;
+    }
+
+    const prevSet = new Set(prevIds);
+    const currSet = new Set(ids);
+
+    // Check if only additions happened (all previous IDs still present, in same order)
+    const onlyAdded =
+      prevIds.length <= ids.length &&
+      prevIds.every((id, i) => id === ids[i]);
+
+    if (onlyAdded) {
+      const added = ids.length - prevIds.length;
+      if (added > 0) {
+        const newStyles = generateRandomStyles(added, qrStyle);
+        setBatchStyles((prev) => [...prev, ...newStyles]);
+      }
+    } else {
+      // Deletion or reorder — rebuild styles aligned to current entries
+      setBatchStyles((prev) =>
+        ids.map((id, i) => {
+          const oldIdx = prevIds.indexOf(id);
+          return oldIdx >= 0 ? prev[oldIdx] : generateRandomStyles(1, qrStyle)[0];
+        }),
+      );
+    }
+
+    prevBatchIds.current = ids;
+  }, [batchEntries, generateRandomStyles, qrStyle]);
 
   const batchSvgs = useMemo(() => {
     return batchEntries.map((e, i) => ({
@@ -205,33 +297,14 @@ export default function App() {
 
   const handleBatchCSVImport = useCallback((imported: BatchEntry[]) => {
     const lines = imported.map((e) => e.data);
+    setImportedNames(imported.map((e) => ({ data: e.data, name: e.name })));
     setBatchInput(lines.join("\n"));
   }, []);
 
   const handleBatchStyleShuffle = useCallback(() => {
-    const count = batchEntries.length;
-    if (count === 0) return;
-    const styles: QRStyle[] = Array.from({ length: count }, () => {
-      const r = QR_COLORS[Math.floor(Math.random() * QR_COLORS.length)];
-      const eye = SHUFFLE_EYES[Math.floor(Math.random() * SHUFFLE_EYES.length)];
-      const pupil =
-        SHUFFLE_PUPILS[Math.floor(Math.random() * SHUFFLE_PUPILS.length)];
-      const pixel =
-        SHUFFLE_PIXELS[Math.floor(Math.random() * SHUFFLE_PIXELS.length)];
-      return {
-        ...qrStyle,
-        colorId: r.id,
-        fgColor: r.fg,
-        bgColor: r.bg,
-        eyeColor: r.fg,
-        pupilColor: r.fg,
-        eyeShape: eye,
-        pupilShape: pupil,
-        pixelShape: pixel,
-      };
-    });
-    setBatchStyles(styles);
-  }, [batchEntries.length, qrStyle]);
+    if (batchEntries.length === 0) return;
+    setBatchStyles(generateRandomStyles(batchEntries.length, qrStyle));
+  }, [batchEntries.length, generateRandomStyles, qrStyle]);
 
   const qrValue = useMemo(
     () => encodeQR(activeType, forms),
@@ -346,7 +419,9 @@ export default function App() {
     };
   }, [svg, qrValue, qrStyle]);
 
+  const loadedRef = useRef(false);
   useEffect(() => {
+    if (!loadedRef.current) return;
     try {
       saveHistoryToStorage(history);
     } catch {}
@@ -537,6 +612,8 @@ export default function App() {
         return <InfoPanel />;
       case "support":
         return <SupportPanel />;
+      case "credits":
+        return <CreditsPanel />;
       default:
         return null;
     }
@@ -546,9 +623,8 @@ export default function App() {
     <div
       className="app"
       data-theme={resolvedTheme}
-      {...(isTauri ? { "data-tauri": "" } : {})}
+      {...(showTitleBar ? { "data-tauri": "" } : {})}
     >
-      <Splash />
       {(onboarding === "whatsnew" || onboarding === "welcome") && (
         <WhatsNew
           onDone={() => {
@@ -565,7 +641,7 @@ export default function App() {
           }}
         />
       )}
-      {isTauri && onboarding === "done" && <TitleBar />}
+      {showTitleBar && onboarding === "done" && <TitleBar />}
       <div className="tab-bar">
         <div className="tab-bar-top">
           {TOP_TABS.map((tab) => {
@@ -600,9 +676,11 @@ export default function App() {
       </div>
 
       <div className="side-panel" ref={sidePanelRef}>
-        <div className="app-brand">
-          <span className="app-brand-name"><TextReveal text="Curium" per="char" /></span>
-        </div>
+        {!showTitleBar && (
+          <div className="app-brand">
+            <span className="app-brand-name"><TextReveal text="Curium" per="char" /></span>
+          </div>
+        )}
         {renderTabContent()}
       </div>
 

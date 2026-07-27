@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ShieldIcon, PaletteIcon, ScanIcon, ArrowRightIcon, HeartIcon } from "@phosphor-icons/react";
-import icon from "../icon.png";
 import { TextReveal } from "./TextReveal";
 
 const FEATURES = [
@@ -44,10 +43,8 @@ export function Welcome({ onDone }: WelcomeProps) {
   return (
     <div ref={rootRef} className="welcome-screen">
       <div className="welcome-content">
-        <div className="welcome-spacer" />
-
         <div ref={logoRef} className="welcome-logo-wrap">
-          <img src={icon} alt="Curium" className="welcome-logo" />
+          <img src='./icon.png' alt="Curium" className="welcome-logo" />
         </div>
 
         <div ref={titleRef} className="welcome-title"><TextReveal text="Welcome to Curium" per="word" /></div>

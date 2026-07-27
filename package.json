@@ -1,15 +1,15 @@
 {
   "name": "curium",
-  "version": "0.6.0",
+  "version": "0.6.4",
   "license": "AGPL-3.0",
   "packageManager": "pnpm@11.11.0",
   "main": "expo-router/entry",
   "scripts": {
-    "postinstall": "node scripts/write-build-info.js && node scripts/sync-release-notes.js",
-    "start": "node scripts/write-build-info.js && expo start",
-    "android": "node scripts/write-build-info.js && expo start --android",
-    "ios": "node scripts/write-build-info.js && expo start --ios",
-    "web": "node scripts/write-build-info.js && expo start --web",
+    "postinstall": "pnpm --filter @curium/shared build && node scripts/write-build-info.js && node scripts/sync-release-notes.js",
+    "start": "pnpm --filter @curium/shared build && node scripts/write-build-info.js && expo start",
+    "android": "pnpm --filter @curium/shared build && node scripts/write-build-info.js && expo start --android",
+    "ios": "pnpm --filter @curium/shared build && node scripts/write-build-info.js && expo start --ios",
+    "web": "pnpm --filter @curium/shared build && node scripts/write-build-info.js && expo start --web",
     "build:info": "node scripts/write-build-info.js",
     "lint": "expo lint"
   },
@@ -51,7 +51,8 @@
     "react-native-svg": "15.15.4",
     "react-native-view-shot": "5.1.0",
     "react-native-worklets": "0.10.0",
-    "share-intent": "workspace:*"
+    "share-intent": "workspace:*",
+    "@curium/shared": "workspace:*"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",

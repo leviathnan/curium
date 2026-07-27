@@ -216,6 +216,7 @@ export type SheetId =
   | "fgColor"
   | "bgColor"
   | "eyeColor"
+  | "pupilColor"
   | "eye"
   | "pupil"
   | "pixel"

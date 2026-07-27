@@ -33,6 +33,19 @@ body {
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+}
+
+::selection {
+  background: var(--selection-bg);
+  color: var(--selection-text);
+}
+
+::-moz-selection {
+  background: var(--selection-bg);
+  color: var(--selection-text);
 }
 
 /* ── Splash Screen ───────────────────────────────────────────────────── */
@@ -82,11 +95,8 @@ body {
   height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   padding: 32px;
-}
-
-.welcome-spacer {
-  flex: 1;
 }
 
 .welcome-logo-wrap {
@@ -639,6 +649,15 @@ body {
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
 .qr-animate {
   animation: qr-in 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.1) both;
 }
@@ -952,6 +971,7 @@ textarea.input {
 .list-item:nth-child(8) { animation-delay: 0.21s; }
 .list-item:nth-child(9) { animation-delay: 0.24s; }
 .list-item:nth-child(10) { animation-delay: 0.27s; }
+.list-item:nth-child(n+11) { animation-delay: 0.3s; }
 
 @keyframes list-item-in {
   from {
@@ -1397,6 +1417,7 @@ textarea.input {
   text-align: center;
   transition: border-color 0.12s ease;
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .rgb-input::-webkit-outer-spin-button,
@@ -1510,19 +1531,10 @@ textarea.input {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   transition: border-color 0.15s ease, transform 0.15s ease;
-  animation: batch-item-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1) both;
+  animation: batch-item-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.batch-item:nth-child(1) { animation-delay: 0s; }
-.batch-item:nth-child(2) { animation-delay: 0.04s; }
-.batch-item:nth-child(3) { animation-delay: 0.08s; }
-.batch-item:nth-child(4) { animation-delay: 0.12s; }
-.batch-item:nth-child(5) { animation-delay: 0.16s; }
-.batch-item:nth-child(6) { animation-delay: 0.2s; }
-.batch-item:nth-child(7) { animation-delay: 0.24s; }
-.batch-item:nth-child(8) { animation-delay: 0.28s; }
-.batch-item:nth-child(9) { animation-delay: 0.32s; }
-.batch-item:nth-child(10) { animation-delay: 0.36s; }
+.batch-item:nth-child(n+1) { animation-delay: 0.3s; }
 
 @keyframes batch-item-in {
   from {
@@ -1567,6 +1579,71 @@ textarea.input {
   text-align: center;
   padding: var(--spacing-xxl);
   animation: placeholder-breathe 4s ease-in-out infinite;
+}
+
+.batch-guide {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0 var(--spacing-base);
+  margin-bottom: 0;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.2s ease,
+              padding 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              margin-bottom 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.batch-guide-open {
+  max-height: 300px;
+  opacity: 1;
+  padding: var(--spacing-base);
+  margin-bottom: var(--spacing-sm);
+}
+
+.batch-guide-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.batch-guide-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+
+.batch-guide-text code {
+  background: var(--surface-offset);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 10px;
+}
+
+.batch-dropzone {
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-base);
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-faint);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  margin-top: 6px;
+}
+
+.batch-dropzone:hover {
+  border-color: var(--text-muted);
+  background: var(--surface);
+}
+
+.batch-dropzone-active {
+  border-color: var(--primary);
+  background: var(--primary-bg);
 }
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */
@@ -1708,5 +1785,3 @@ textarea.input {
     min-width: 240px;
   }
 }
-
-

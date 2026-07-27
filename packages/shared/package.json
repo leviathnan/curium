@@ -1,19 +1,56 @@
 {
   "name": "@curium/shared",
-  "version": "0.6.0",
+  "version": "0.6.4",
+  "private": true,
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./types/qr": "./src/types/qr.ts",
-    "./constants/theme": "./src/constants/theme.ts",
-    "./constants/qrPresets": "./src/constants/qrPresets.ts",
-    "./constants/colorUtils": "./src/constants/colorUtils.ts",
-    "./utils/svg-export": "./src/utils/svg-export.ts",
-    "./services/history": "./src/services/history.ts",
-    "./services/settings": "./src/services/settings.ts",
-    "./services/templates": "./src/services/templates.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./types/qr": {
+      "types": "./dist/types/qr.d.ts",
+      "default": "./dist/types/qr.js"
+    },
+    "./constants/theme": {
+      "types": "./dist/constants/theme.d.ts",
+      "default": "./dist/constants/theme.js"
+    },
+    "./constants/qrPresets": {
+      "types": "./dist/constants/qrPresets.d.ts",
+      "default": "./dist/constants/qrPresets.js"
+    },
+    "./constants/colorUtils": {
+      "types": "./dist/constants/colorUtils.d.ts",
+      "default": "./dist/constants/colorUtils.js"
+    },
+    "./utils/svg-export": {
+      "types": "./dist/utils/svg-export.d.ts",
+      "default": "./dist/utils/svg-export.js"
+    },
+    "./utils/storage": {
+      "types": "./dist/utils/storage.d.ts",
+      "default": "./dist/utils/storage.js"
+    },
+    "./services/history": {
+      "types": "./dist/services/history.d.ts",
+      "default": "./dist/services/history.js"
+    },
+    "./services/settings": {
+      "types": "./dist/services/settings.d.ts",
+      "default": "./dist/services/settings.js"
+    },
+    "./services/templates": {
+      "types": "./dist/services/templates.d.ts",
+      "default": "./dist/services/templates.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "tsc -p tsconfig.json --build --clean"
   },
   "dependencies": {
     "qrcode": "1.5.4"

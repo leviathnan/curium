@@ -1,19 +1,42 @@
 {
   "name": "@curium/desktop",
-  "version": "0.6.0",
+  "version": "0.6.4",
+  "description": "Privacy-first QR code generator, customizer, and scanner.",
+  "license": "AGPL-3.0",
+  "author": "Nylxar",
   "type": "module",
+  "keywords": [
+    "qr-code",
+    "qr-generator",
+    "privacy",
+    "offline",
+    "open-source",
+    "tauri",
+    "react"
+  ],
+  "homepage": "https://curium.design",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nylxar/curium",
+    "directory": "packages/desktop"
+  },
+  "bugs": {
+    "url": "https://github.com/nylxar/curium/issues"
+  },
   "scripts": {
-    "dev": "rsbuild dev",
-    "build": "tsc -b && rsbuild build",
+    "dev": "pnpm --filter @curium/shared build && rsbuild dev",
+    "build": "pnpm --filter @curium/shared build && tsc -b && rsbuild build",
     "preview": "rsbuild preview",
     "tauri": "tauri dev",
     "tauri:build": "tauri build"
   },
   "dependencies": {
     "@curium/shared": "workspace:*",
+    "@phosphor-icons/react": "^2.1.10",
+    "@tauri-apps/plugin-process": "^2.3.1",
+    "@tauri-apps/plugin-updater": "^2.10.1",
     "fflate": "^0.8.3",
     "gsap": "^3.15.0",
-    "@phosphor-icons/react": "^2.1.10",
     "qrcode": "1.5.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
