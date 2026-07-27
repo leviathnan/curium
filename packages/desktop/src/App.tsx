@@ -142,7 +142,7 @@ export default function App() {
   const [batchInput, setBatchInput] = useState("");
   const [batchExporting, setBatchExporting] = useState(false);
   const [batchStyles, setBatchStyles] = useState<QRStyle[]>([]);
-  const [importedNames, setImportedNames] = useState<Map<string, string>>(new Map());
+  const [importedNames, setImportedNames] = useState<{ data: string; name: string }[]>([]);
 
   const generateRandomStyles = useCallback((count: number, base: QRStyle) => {
     if (count === 0) return [];
@@ -173,11 +173,19 @@ export default function App() {
 
   const batchEntries = useMemo<BatchEntry[]>(() => {
     const lines = batchInput.split("\n").map((l) => l.trim()).filter(Boolean);
-    return lines.map((data, i) => ({
-      id: `${i}-${data}`,
-      name: importedNames.get(data) ?? `qr-${i + 1}`,
-      data,
-    }));
+    // Consume imported names in order, matching by data content.
+    // Handles duplicates by queuing names per data value.
+    const nameQueue = new Map<string, string[]>();
+    importedNames.forEach((n) => {
+      const q = nameQueue.get(n.data);
+      if (q) q.push(n.name);
+      else nameQueue.set(n.data, [n.name]);
+    });
+    return lines.map((data, i) => {
+      const q = nameQueue.get(data);
+      const name = q && q.length > 0 ? q.shift()! : `qr-${i + 1}`;
+      return { id: `${i}-${data}`, name, data };
+    });
   }, [batchInput, importedNames]);
 
   const prevBatchIds = useRef<string[]>([]);
@@ -289,9 +297,7 @@ export default function App() {
 
   const handleBatchCSVImport = useCallback((imported: BatchEntry[]) => {
     const lines = imported.map((e) => e.data);
-    const names = new Map<string, string>();
-    imported.forEach((e) => { if (e.name) names.set(e.data, e.name); });
-    setImportedNames(names);
+    setImportedNames(imported.map((e) => ({ data: e.data, name: e.name })));
     setBatchInput(lines.join("\n"));
   }, []);
 
