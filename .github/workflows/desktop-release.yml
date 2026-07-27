@@ -30,13 +30,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # ── macOS (.dmg) ───────────────────────────────────────────────────
+          # ── macOS (.dmg + .app.tar.gz for updater) ──────────────────────────
           - platform: macos-14
-            args: "--target aarch64-apple-darwin --bundles dmg"
+            args: "--target aarch64-apple-darwin --bundles dmg,app"
             artifact_suffix: macos-arm64
             target: aarch64-apple-darwin
           - platform: macos-14
-            args: "--target x86_64-apple-darwin --bundles dmg"
+            args: "--target x86_64-apple-darwin --bundles dmg,app"
             artifact_suffix: macos-x64
             target: x86_64-apple-darwin
 
@@ -134,6 +134,8 @@ jobs:
           path: |
             packages/desktop/src-tauri/target/*/release/bundle/**/*.dmg
             packages/desktop/src-tauri/target/*/release/bundle/**/*.dmg.sig
+            packages/desktop/src-tauri/target/*/release/bundle/**/*.app.tar.gz
+            packages/desktop/src-tauri/target/*/release/bundle/**/*.app.tar.gz.sig
             packages/desktop/src-tauri/target/*/release/bundle/**/*.exe
             packages/desktop/src-tauri/target/*/release/bundle/**/*.AppImage
             packages/desktop/src-tauri/target/*/release/bundle/**/*.AppImage.sig
@@ -260,26 +262,26 @@ jobs:
               '. + {"linux-aarch64": {"url": $url, "signature": $sig}}')
           fi
 
-          # macOS arm64 DMG
-          DMG_ARM=$(find desktop-artifacts -name "*_aarch64.dmg" 2>/dev/null | head -1)
-          DMG_ARM_SIG=$(find desktop-artifacts -name "*_aarch64.dmg.sig" 2>/dev/null | head -1)
-          if [ -n "$DMG_ARM" ]; then
-            DMG_ARM_FILE=$(basename "$DMG_ARM")
-            SIG=$(read_sig "$DMG_ARM_SIG")
+          # macOS arm64 .app.tar.gz (updater payload)
+          APP_ARM=$(find desktop-artifacts -name "*_aarch64.app.tar.gz" 2>/dev/null | head -1)
+          APP_ARM_SIG=$(find desktop-artifacts -name "*_aarch64.app.tar.gz.sig" 2>/dev/null | head -1)
+          if [ -n "$APP_ARM" ]; then
+            APP_ARM_FILE=$(basename "$APP_ARM")
+            SIG=$(read_sig "$APP_ARM_SIG")
             PLATFORMS=$(echo "$PLATFORMS" | jq \
-              --arg url "${BASE_URL}/${DMG_ARM_FILE}" \
+              --arg url "${BASE_URL}/${APP_ARM_FILE}" \
               --arg sig "$SIG" \
               '. + {"darwin-aarch64": {"url": $url, "signature": $sig}}')
           fi
 
-          # macOS x64 DMG
-          DMG_X64=$(find desktop-artifacts -name "*_x64.dmg" 2>/dev/null | head -1)
-          DMG_X64_SIG=$(find desktop-artifacts -name "*_x64.dmg.sig" 2>/dev/null | head -1)
-          if [ -n "$DMG_X64" ]; then
-            DMG_X64_FILE=$(basename "$DMG_X64")
-            SIG=$(read_sig "$DMG_X64_SIG")
+          # macOS x64 .app.tar.gz (updater payload)
+          APP_X64=$(find desktop-artifacts -name "*_x64.app.tar.gz" 2>/dev/null | head -1)
+          APP_X64_SIG=$(find desktop-artifacts -name "*_x64.app.tar.gz.sig" 2>/dev/null | head -1)
+          if [ -n "$APP_X64" ]; then
+            APP_X64_FILE=$(basename "$APP_X64")
+            SIG=$(read_sig "$APP_X64_SIG")
             PLATFORMS=$(echo "$PLATFORMS" | jq \
-              --arg url "${BASE_URL}/${DMG_X64_FILE}" \
+              --arg url "${BASE_URL}/${APP_X64_FILE}" \
               --arg sig "$SIG" \
               '. + {"darwin-x86_64": {"url": $url, "signature": $sig}}')
           fi
@@ -287,7 +289,7 @@ jobs:
           # Only upload if we have platforms
           if [ "$(echo "$PLATFORMS" | jq 'keys | length')" -gt 0 ]; then
             jq -n \
-              --arg version "$TAG" \
+              --arg version "$VERSION" \
               --arg pub_date "$PUB_DATE" \
               --argjson platforms "$PLATFORMS" \
               '{version: $version, notes: "Curium $version", pub_date: $pub_date, platforms: $platforms}' \
