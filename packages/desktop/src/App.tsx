@@ -14,13 +14,12 @@ import { StylePanel } from "./panels/StylePanel";
 import { ExportBar } from "./components/ExportBar";
 import { TitleBar, useIsTauri } from "./components/TitleBar";
 import { ConfirmDialog } from "./components/ConfirmDialog";
-import { Splash } from "./components/Splash";
+import { gsap } from "gsap";
 import { Welcome } from "./components/Welcome";
 import { WhatsNew } from "./components/WhatsNew";
 import { TextReveal } from "./components/TextReveal";
 import { BatchPanel } from "./panels/BatchPanel";
 import { animateThemeTransition, bounceButton } from "./utils/animations";
-import { gsap } from "gsap";
 
 import type { FormState, Template, HistoryEntry, TabId } from "./types";
 import { DEFAULT_FORMS, TOP_TABS, BOTTOM_TABS } from "./types";
@@ -71,6 +70,26 @@ export default function App() {
     mq.addEventListener("change", resolve);
     return () => mq.removeEventListener("change", resolve);
   }, [theme]);
+
+  useEffect(() => {
+    const splash = document.getElementById("curium-splash");
+    if (!splash) return;
+    const content = splash.querySelector<HTMLElement>("#curium-splash-content");
+    const img = splash.querySelector<HTMLElement>("#curium-splash-img");
+
+    gsap.set(splash, { opacity: 1 });
+
+    const tl = gsap.timeline({ delay: 0.6 });
+    if (img) {
+      tl.to(img, { scale: 1.08, rotate: 4, duration: 0.3, ease: "power2.out" })
+        .to(img, { scale: 0.95, rotate: 0, duration: 0.25, ease: "power2.in" });
+    }
+    if (content) {
+      tl.to(content, { opacity: 0, y: -8, duration: 0.35, ease: "power3.in" }, "-=0.15");
+    }
+    tl.to(splash, { opacity: 0, duration: 0.3, ease: "power2.inOut" }, "-=0.1")
+      .call(() => splash.remove());
+  }, []);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", resolvedTheme);
@@ -576,7 +595,6 @@ export default function App() {
       data-theme={resolvedTheme}
       {...(showTitleBar ? { "data-tauri": "" } : {})}
     >
-      <Splash />
       {(onboarding === "whatsnew" || onboarding === "welcome") && (
         <WhatsNew
           onDone={() => {
