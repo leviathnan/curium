@@ -1,9 +1,9 @@
 {
-  "commit": "8e1c2b54de9c3ca0720e2ad52d9bb0dbf097cf1f",
-  "shortCommit": "8e1c2b5",
+  "commit": "59e466e43f5661ef2e1473f23d12db59d229b22e",
+  "shortCommit": "59e466e",
   "branch": "preview",
-  "commitDate": "2026-07-26 21:43:43 +0300",
-  "commitMessage": "update: RELEASE_NOTES.md",
+  "commitDate": "2026-07-27 18:05:29 +0300",
+  "commitMessage": "Update desktop-release.yml",
   "isDirty": true,
-  "buildDate": "2026-07-26T19:08:08.000Z"
+  "buildDate": "2026-07-27T15:13:43.442Z"
 }
