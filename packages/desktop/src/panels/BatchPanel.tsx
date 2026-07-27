@@ -1,5 +1,5 @@
-import { useRef, useCallback } from "react";
-import { ShuffleIcon } from "@phosphor-icons/react";
+import { useRef, useCallback, useState } from "react";
+import { ShuffleIcon, FileCsvIcon, QuestionIcon } from "@phosphor-icons/react";
 
 interface BatchEntry {
   id: string;
@@ -57,6 +57,8 @@ export function BatchPanel({
   onShuffleStyles,
 }: BatchPanelProps) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const [dragging, setDragging] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
 
   const handleFileImport = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,12 +66,27 @@ export function BatchPanel({
       if (!file) return;
       const reader = new FileReader();
       reader.onload = () => {
-        const text = reader.result as string;
-        const parsed = parseCSV(text);
+        const parsed = parseCSV(reader.result as string);
         if (parsed.length > 0) onImportCSV(parsed);
       };
       reader.readAsText(file);
       e.target.value = "";
+    },
+    [onImportCSV],
+  );
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setDragging(false);
+      const file = e.dataTransfer.files[0];
+      if (!file || !file.name.endsWith(".csv")) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const parsed = parseCSV(reader.result as string);
+        if (parsed.length > 0) onImportCSV(parsed);
+      };
+      reader.readAsText(file);
     },
     [onImportCSV],
   );
@@ -90,22 +107,60 @@ export function BatchPanel({
         <div className="section-header" style={{ marginBottom: 8 }}>
           <div className="section-title history-title">
             <span>Batch</span>
-            <span className="history-count">({entries.length})</span>
+            {entries.length > 0 && (
+              <span className="history-count">({entries.length})</span>
+            )}
           </div>
-          <button className="btn btn-icon" onClick={onShuffleStyles} title="Shuffle styles">
-            <ShuffleIcon size={14} />
-          </button>
+          <div style={{ display: "flex", gap: 4 }}>
+            <button
+              className="btn btn-icon"
+              onClick={() => setShowGuide((g) => !g)}
+              title="How to use"
+            >
+              <QuestionIcon size={14} />
+            </button>
+            <button className="btn btn-icon" onClick={onShuffleStyles} title="Shuffle styles">
+              <ShuffleIcon size={14} />
+            </button>
+          </div>
         </div>
+
+        <div className={`batch-guide ${showGuide ? "batch-guide-open" : ""}`}>
+          <div className="batch-guide-title">How to use batch generation</div>
+          <div className="batch-guide-text">
+            Enter one QR code per line. Each line becomes a separate QR code.
+            You can also import a CSV file with <code>name,data</code> columns.
+          </div>
+          <div className="batch-guide-text">
+            Supported formats: URLs, plain text, WiFi configs, emails, phone
+            numbers, contacts, locations, events, and OTP auth URIs.
+          </div>
+        </div>
+
         <textarea
           className="input"
-          placeholder={
-            "One per line...\nhttps://example.com\nHello World\nWIFI:T:WPA;S:MyNetwork;P:pass;;"
-          }
+          placeholder={"One QR per line\nhttps://example.com\nHello World\nWIFI:T:WPA;S:MyNetwork;P:pass;;"}
           value={input}
           onChange={(e) => onInputChange(e.target.value)}
           rows={8}
           style={{ resize: "vertical", minHeight: 120, fontSize: 12 }}
         />
+        <div
+          className={`batch-dropzone ${dragging ? "batch-dropzone-active" : ""}`}
+          onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={handleDrop}
+          onClick={() => fileRef.current?.click()}
+        >
+          Drop a CSV file here or click to import
+          <input
+            ref={fileRef}
+            type="file"
+            accept=".csv"
+            style={{ display: "none" }}
+            onChange={handleFileImport}
+          />
+        </div>
       </div>
 
       <div className="section">
@@ -117,13 +172,6 @@ export function BatchPanel({
           >
             Import CSV
           </button>
-          <input
-            ref={fileRef}
-            type="file"
-            accept=".csv"
-            style={{ display: "none" }}
-            onChange={handleFileImport}
-          />
           <button
             className="btn"
             onClick={handleCSVExport}
