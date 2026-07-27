@@ -4,6 +4,7 @@ export * from "./constants/theme";
 export * from "./constants/qrPresets";
 export * from "./constants/colorUtils";
 export * from "./utils/svg-export";
+export * from "./utils/storage";
 export * from "./services/history";
 export * from "./services/settings";
 export * from "./services/templates";
