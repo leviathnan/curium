@@ -32,9 +32,11 @@
   },
   "dependencies": {
     "@curium/shared": "workspace:*",
+    "@phosphor-icons/react": "^2.1.10",
+    "@tauri-apps/plugin-process": "^2.3.1",
+    "@tauri-apps/plugin-updater": "^2.10.1",
     "fflate": "^0.8.3",
     "gsap": "^3.15.0",
-    "@phosphor-icons/react": "^2.1.10",
     "qrcode": "1.5.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
