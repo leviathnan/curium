@@ -119,6 +119,7 @@ jobs:
         uses: tauri-apps/tauri-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
         with:
           # Do not create a release — Android workflow handles that
           releaseId: ""
@@ -134,6 +135,8 @@ jobs:
             packages/desktop/src-tauri/target/*/release/bundle/**/*.dmg
             packages/desktop/src-tauri/target/*/release/bundle/**/*.exe
             packages/desktop/src-tauri/target/*/release/bundle/**/*.AppImage
+            packages/desktop/src-tauri/target/*/release/bundle/**/*.nsis.zip
+            packages/desktop/src-tauri/target/*/release/bundle/**/*.nsis.zip.sig
           if-no-files-found: warn
           retention-days: 14
 
@@ -150,13 +153,15 @@ jobs:
           path: desktop-artifacts
           merge-multiple: true
 
-      - name: Upload to existing release
+      - name: Upload to existing release and generate updater JSON
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
 
           TAG="${{ github.ref_name }}"
+          VERSION="${TAG#v}"
+          REPO="${{ github.repository }}"
 
           # Check if release exists (created by Android workflow)
           if ! gh release view "$TAG" &>/dev/null; then
@@ -182,4 +187,109 @@ jobs:
             echo "Uploaded ${#FILES[@]} desktop artifacts to $TAG"
           else
             echo "No desktop artifacts found to upload"
+          fi
+
+          # Generate latest.json for the updater
+          PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          BASE_URL="https://github.com/${REPO}/releases/download/${TAG}"
+
+          # Helper: read signature file content
+          read_sig() {
+            local f="$1"
+            if [ -f "$f" ]; then
+              cat "$f"
+            else
+              echo ""
+            fi
+          }
+
+          # Find updater artifacts and build platforms JSON
+          PLATFORMS="{}"
+
+          # Windows x64 NSIS
+          NSIS_ZIP=$(find desktop-artifacts -name "*_x64_setup.nsis.zip" 2>/dev/null | head -1)
+          NSIS_SIG=$(find desktop-artifacts -name "*_x64_setup.nsis.zip.sig" 2>/dev/null | head -1)
+          if [ -n "$NSIS_ZIP" ]; then
+            NSIS_FILE=$(basename "$NSIS_ZIP")
+            SIG=$(read_sig "$NSIS_SIG")
+            PLATFORMS=$(echo "$PLATFORMS" | jq \
+              --arg url "${BASE_URL}/${NSIS_FILE}" \
+              --arg sig "$SIG" \
+              '. + {"windows-x86_64": {"url": $url, "signature": $sig}}')
+          fi
+
+          # Windows arm64 NSIS
+          NSIS_ARM=$(find desktop-artifacts -name "*_aarch64_setup.nsis.zip" 2>/dev/null | head -1)
+          NSIS_ARM_SIG=$(find desktop-artifacts -name "*_aarch64_setup.nsis.zip.sig" 2>/dev/null | head -1)
+          if [ -n "$NSIS_ARM" ]; then
+            NSIS_ARM_FILE=$(basename "$NSIS_ARM")
+            SIG=$(read_sig "$NSIS_ARM_SIG")
+            PLATFORMS=$(echo "$PLATFORMS" | jq \
+              --arg url "${BASE_URL}/${NSIS_ARM_FILE}" \
+              --arg sig "$SIG" \
+              '. + {"windows-aarch64": {"url": $url, "signature": $sig}}')
+          fi
+
+          # Linux x64 AppImage
+          APPIMAGE=$(find desktop-artifacts -name "*_amd64.AppImage" ! -name "*.sig" 2>/dev/null | head -1)
+          APPIMAGE_SIG=$(find desktop-artifacts -name "*_amd64.AppImage.sig" 2>/dev/null | head -1)
+          if [ -n "$APPIMAGE" ]; then
+            APPIMAGE_FILE=$(basename "$APPIMAGE")
+            SIG=$(read_sig "$APPIMAGE_SIG")
+            PLATFORMS=$(echo "$PLATFORMS" | jq \
+              --arg url "${BASE_URL}/${APPIMAGE_FILE}" \
+              --arg sig "$SIG" \
+              '. + {"linux-x86_64": {"url": $url, "signature": $sig}}')
+          fi
+
+          # Linux arm64 AppImage
+          APPIMAGE_ARM=$(find desktop-artifacts -name "*_aarch64.AppImage" ! -name "*.sig" 2>/dev/null | head -1)
+          APPIMAGE_ARM_SIG=$(find desktop-artifacts -name "*_aarch64.AppImage.sig" 2>/dev/null | head -1)
+          if [ -n "$APPIMAGE_ARM" ]; then
+            APPIMAGE_ARM_FILE=$(basename "$APPIMAGE_ARM")
+            SIG=$(read_sig "$APPIMAGE_ARM_SIG")
+            PLATFORMS=$(echo "$PLATFORMS" | jq \
+              --arg url "${BASE_URL}/${APPIMAGE_ARM_FILE}" \
+              --arg sig "$SIG" \
+              '. + {"linux-aarch64": {"url": $url, "signature": $sig}}')
+          fi
+
+          # macOS arm64 DMG
+          DMG_ARM=$(find desktop-artifacts -name "*_aarch64.dmg" 2>/dev/null | head -1)
+          DMG_ARM_SIG=$(find desktop-artifacts -name "*_aarch64.dmg.sig" 2>/dev/null | head -1)
+          if [ -n "$DMG_ARM" ]; then
+            DMG_ARM_FILE=$(basename "$DMG_ARM")
+            SIG=$(read_sig "$DMG_ARM_SIG")
+            PLATFORMS=$(echo "$PLATFORMS" | jq \
+              --arg url "${BASE_URL}/${DMG_ARM_FILE}" \
+              --arg sig "$SIG" \
+              '. + {"darwin-aarch64": {"url": $url, "signature": $sig}}')
+          fi
+
+          # macOS x64 DMG
+          DMG_X64=$(find desktop-artifacts -name "*_x64.dmg" 2>/dev/null | head -1)
+          DMG_X64_SIG=$(find desktop-artifacts -name "*_x64.dmg.sig" 2>/dev/null | head -1)
+          if [ -n "$DMG_X64" ]; then
+            DMG_X64_FILE=$(basename "$DMG_X64")
+            SIG=$(read_sig "$DMG_X64_SIG")
+            PLATFORMS=$(echo "$PLATFORMS" | jq \
+              --arg url "${BASE_URL}/${DMG_X64_FILE}" \
+              --arg sig "$SIG" \
+              '. + {"darwin-x86_64": {"url": $url, "signature": $sig}}')
+          fi
+
+          # Only upload if we have platforms
+          if [ "$(echo "$PLATFORMS" | jq 'keys | length')" -gt 0 ]; then
+            jq -n \
+              --arg version "$TAG" \
+              --arg pub_date "$PUB_DATE" \
+              --argjson platforms "$PLATFORMS" \
+              '{version: $version, notes: "Curium $version", pub_date: $pub_date, platforms: $platforms}' \
+              > latest.json
+
+            gh release upload "$TAG" latest.json --clobber
+            echo "Generated and uploaded latest.json"
+            cat latest.json
+          else
+            echo "No updater artifacts found, skipping latest.json"
           fi
