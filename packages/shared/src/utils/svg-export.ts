@@ -508,10 +508,11 @@ export function generateSVG(
   qrStyle: QRStyle,
   size: number = 512,
   skipLogo: boolean = false,
+  useLogoEcl: boolean = !skipLogo,
 ): string | null {
   const ECL_ORDER: ECL[] = ["L", "M", "Q", "H"];
   const eclIdx = ECL_ORDER.indexOf(qrStyle.ecl);
-  const effectiveEcl = qrStyle.logoUri && !skipLogo
+  const effectiveEcl = qrStyle.logoUri && useLogoEcl
     ? ECL_ORDER[Math.max(eclIdx, 3)]
     : qrStyle.ecl;
 
