@@ -137,10 +137,9 @@ jobs:
             packages/desktop/src-tauri/target/*/release/bundle/**/*.app.tar.gz
             packages/desktop/src-tauri/target/*/release/bundle/**/*.app.tar.gz.sig
             packages/desktop/src-tauri/target/*/release/bundle/**/*.exe
+            packages/desktop/src-tauri/target/*/release/bundle/**/*.exe.sig
             packages/desktop/src-tauri/target/*/release/bundle/**/*.AppImage
             packages/desktop/src-tauri/target/*/release/bundle/**/*.AppImage.sig
-            packages/desktop/src-tauri/target/*/release/bundle/**/*.nsis.zip
-            packages/desktop/src-tauri/target/*/release/bundle/**/*.nsis.zip.sig
           if-no-files-found: warn
           retention-days: 14
 
@@ -188,10 +187,9 @@ jobs:
             desktop-artifacts/**/*.app.tar.gz
             desktop-artifacts/**/*.app.tar.gz.sig
             desktop-artifacts/**/*.exe
+            desktop-artifacts/**/*.exe.sig
             desktop-artifacts/**/*.AppImage
             desktop-artifacts/**/*.AppImage.sig
-            desktop-artifacts/**/*.nsis.zip
-            desktop-artifacts/**/*.nsis.zip.sig
           )
 
           if [ ${#FILES[@]} -gt 0 ]; then
@@ -218,11 +216,11 @@ jobs:
           # Find updater artifacts and build platforms JSON
           PLATFORMS="{}"
 
-          # Windows x64 NSIS
-          NSIS_ZIP=$(find desktop-artifacts -name "*_x64_setup.nsis.zip" 2>/dev/null | head -1)
-          NSIS_SIG=$(find desktop-artifacts -name "*_x64_setup.nsis.zip.sig" 2>/dev/null | head -1)
-          if [ -n "$NSIS_ZIP" ]; then
-            NSIS_FILE=$(basename "$NSIS_ZIP")
+          # Windows x64 NSIS (.exe reused by updater in v2)
+          NSIS_EXE=$(find desktop-artifacts -name "*_x64-setup.exe" ! -name "*.sig" 2>/dev/null | head -1)
+          NSIS_SIG=$(find desktop-artifacts -name "*_x64-setup.exe.sig" 2>/dev/null | head -1)
+          if [ -n "$NSIS_EXE" ]; then
+            NSIS_FILE=$(basename "$NSIS_EXE")
             SIG=$(read_sig "$NSIS_SIG")
             PLATFORMS=$(echo "$PLATFORMS" | jq \
               --arg url "${BASE_URL}/${NSIS_FILE}" \
@@ -230,9 +228,9 @@ jobs:
               '. + {"windows-x86_64": {"url": $url, "signature": $sig}}')
           fi
 
-          # Windows arm64 NSIS
-          NSIS_ARM=$(find desktop-artifacts -name "*_aarch64_setup.nsis.zip" 2>/dev/null | head -1)
-          NSIS_ARM_SIG=$(find desktop-artifacts -name "*_aarch64_setup.nsis.zip.sig" 2>/dev/null | head -1)
+          # Windows arm64 NSIS (.exe reused by updater in v2)
+          NSIS_ARM=$(find desktop-artifacts -name "*_aarch64-setup.exe" ! -name "*.sig" 2>/dev/null | head -1)
+          NSIS_ARM_SIG=$(find desktop-artifacts -name "*_aarch64-setup.exe.sig" 2>/dev/null | head -1)
           if [ -n "$NSIS_ARM" ]; then
             NSIS_ARM_FILE=$(basename "$NSIS_ARM")
             SIG=$(read_sig "$NSIS_ARM_SIG")
