@@ -25,6 +25,7 @@ import {
   ScanIcon,
   ArrowRightIcon,
 } from "@phosphor-icons/react";
+import { UpdateSection } from "../components/UpdateSection";
 
 const ICON_MEANINGS = [
   { icon: QrCodeIcon, name: "Generate", meaning: "Create QR codes" },
@@ -63,6 +64,7 @@ export function SettingsPanel({
 }) {
   return (
     <>
+      <UpdateSection />
       <div className="section">
         <div className="section-title">Theme</div>
         <div className="btn-row">
