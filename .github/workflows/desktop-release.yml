@@ -184,8 +184,12 @@ jobs:
           shopt -s nullglob
           FILES=(
             desktop-artifacts/**/*.dmg
+            desktop-artifacts/**/*.dmg.sig
+            desktop-artifacts/**/*.app.tar.gz
+            desktop-artifacts/**/*.app.tar.gz.sig
             desktop-artifacts/**/*.exe
             desktop-artifacts/**/*.AppImage
+            desktop-artifacts/**/*.AppImage.sig
             desktop-artifacts/**/*.nsis.zip
             desktop-artifacts/**/*.nsis.zip.sig
           )
