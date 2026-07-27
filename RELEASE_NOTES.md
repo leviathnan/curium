@@ -1,6 +1,6 @@
-# v0.6.2
+# v0.6.4
 
-## Curium for Desktop (Public Pre-release)
+## Curium for Desktop (Pre-release)
 
 Curium is now available for Windows, macOS, and Linux. Generate, customize with full control over every detail — colors, eye shapes, pixel patterns, and more. Everything runs locally on your machine.
 
