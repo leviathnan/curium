@@ -10,6 +10,8 @@
     "core:window:allow-close",
     "core:window:allow-is-maximized",
     "core:window:allow-start-dragging",
-    "store:default"
+    "store:default",
+    "updater:default",
+    "process:default"
   ]
 }
