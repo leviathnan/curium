@@ -189,9 +189,9 @@ jobs:
             packages/desktop/src-tauri/target/*/release/bundle/**/*.app.tar.gz.sig
             packages/desktop/src-tauri/target/*/release/bundle/**/*.exe
             packages/desktop/src-tauri/target/*/release/bundle/**/*.exe.sig
-            *.tar.gz
-            *.tar.gz.sig
-            SHA256SUMS*.txt
+            packages/desktop/*.tar.gz
+            packages/desktop/*.tar.gz.sig
+            packages/desktop/SHA256SUMS*.txt
           if-no-files-found: warn
           retention-days: 14
 
