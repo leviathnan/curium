@@ -32,35 +32,45 @@ jobs:
         include:
           # ── macOS (.dmg + .app.tar.gz for updater) ──────────────────────────
           - platform: macos-14
+            platform_group: macos
             args: "--target aarch64-apple-darwin --bundles dmg,app"
             artifact_suffix: macos-arm64
             target: aarch64-apple-darwin
           - platform: macos-14
+            platform_group: macos
             args: "--target x86_64-apple-darwin --bundles dmg,app"
             artifact_suffix: macos-x64
             target: x86_64-apple-darwin
 
           # ── Windows (.exe via NSIS) ────────────────────────────────────────
           - platform: windows-latest
+            platform_group: windows
             args: "--target x86_64-pc-windows-msvc --bundles nsis"
             artifact_suffix: windows-x64
             target: x86_64-pc-windows-msvc
           - platform: windows-latest
+            platform_group: windows
             args: "--target aarch64-pc-windows-msvc --bundles nsis"
             artifact_suffix: windows-arm64
             target: aarch64-pc-windows-msvc
 
           # ── Linux (tarball — no AppImage due to upstream bundler issues) ──
           - platform: ubuntu-22.04
+            platform_group: linux
             args: "--target x86_64-unknown-linux-gnu --no-bundle"
             artifact_suffix: linux-x64
             target: x86_64-unknown-linux-gnu
           - platform: ubuntu-24.04-arm
+            platform_group: linux
             args: "--target aarch64-unknown-linux-gnu --no-bundle"
             artifact_suffix: linux-arm64
             target: aarch64-unknown-linux-gnu
 
     runs-on: ${{ matrix.platform }}
+    if: >-
+      github.event_name == 'push' ||
+      github.event.inputs.platform == 'all' ||
+      github.event.inputs.platform == matrix.platform_group
     timeout-minutes: 60
     defaults:
       run:
