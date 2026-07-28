@@ -50,13 +50,13 @@ jobs:
             artifact_suffix: windows-arm64
             target: aarch64-pc-windows-msvc
 
-          # ── Linux (.AppImage) ──────────────────────────────────────────────
+          # ── Linux (tarball — no AppImage due to upstream bundler issues) ──
           - platform: ubuntu-22.04
-            args: "--target x86_64-unknown-linux-gnu --bundles appimage"
+            args: "--target x86_64-unknown-linux-gnu --no-bundle"
             artifact_suffix: linux-x64
             target: x86_64-unknown-linux-gnu
           - platform: ubuntu-24.04-arm
-            args: "--target aarch64-unknown-linux-gnu --bundles appimage"
+            args: "--target aarch64-unknown-linux-gnu --no-bundle"
             artifact_suffix: linux-arm64
             target: aarch64-unknown-linux-gnu
 
@@ -127,6 +127,57 @@ jobs:
           tauriScript: corepack pnpm exec tauri
           args: ${{ matrix.args }}
 
+      - name: Package Linux tarball
+        if: runner.os == 'Linux'
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+
+          VERSION="${GITHUB_REF_NAME#v}"
+          ARCH="${{ matrix.target == 'x86_64-unknown-linux-gnu' && 'x86_64' || 'aarch64' }}"
+          STAGING_DIR="curium-${VERSION}-linux-${ARCH}"
+
+          mkdir -p "${STAGING_DIR}/bin"
+          mkdir -p "${STAGING_DIR}/share/icons/hicolor/512x512/apps"
+          mkdir -p "${STAGING_DIR}/share/applications"
+
+          # Copy binary
+          BINARY=$(find src-tauri/target/*/release -maxdepth 1 -name 'curium' -type f ! -name '*.d' | head -1)
+          cp "${BINARY}" "${STAGING_DIR}/bin/curium"
+          chmod +x "${STAGING_DIR}/bin/curium"
+
+          # Copy icon
+          cp src-tauri/icons/icon.png "${STAGING_DIR}/share/icons/hicolor/512x512/apps/curium.png"
+
+          # Create desktop entry
+          printf '%s\n' \
+            "[Desktop Entry]" \
+            "Name=Curium" \
+            "Comment=Privacy-first QR code customizer and generator" \
+            "Exec=curium %U" \
+            "Icon=curium" \
+            "Terminal=false" \
+            "Type=Application" \
+            "Categories=Utility;" \
+            > "${STAGING_DIR}/share/applications/curium.desktop"
+
+          # Create tarball
+          TARBALL="curium_${VERSION}_linux-${ARCH}.tar.gz"
+          tar -czf "${TARBALL}" "${STAGING_DIR}"
+          rm -rf "${STAGING_DIR}"
+
+          # Sign tarball
+          corepack pnpm exec tauri signer sign "${TARBALL}"
+          test -s "${TARBALL}.sig"
+
+          # Generate checksum
+          CHECKSUM_FILE="SHA256SUMS-linux-${ARCH}.txt"
+          sha256sum "${TARBALL}" > "${CHECKSUM_FILE}"
+
+          echo "Created ${TARBALL}"
+
       - name: Upload desktop artifacts
         uses: actions/upload-artifact@v7
         with:
@@ -138,8 +189,9 @@ jobs:
             packages/desktop/src-tauri/target/*/release/bundle/**/*.app.tar.gz.sig
             packages/desktop/src-tauri/target/*/release/bundle/**/*.exe
             packages/desktop/src-tauri/target/*/release/bundle/**/*.exe.sig
-            packages/desktop/src-tauri/target/*/release/bundle/**/*.AppImage
-            packages/desktop/src-tauri/target/*/release/bundle/**/*.AppImage.sig
+            *.tar.gz
+            *.tar.gz.sig
+            SHA256SUMS*.txt
           if-no-files-found: warn
           retention-days: 14
 
@@ -188,8 +240,9 @@ jobs:
             desktop-artifacts/**/*.app.tar.gz.sig
             desktop-artifacts/**/*.exe
             desktop-artifacts/**/*.exe.sig
-            desktop-artifacts/**/*.AppImage
-            desktop-artifacts/**/*.AppImage.sig
+            desktop-artifacts/**/*.tar.gz
+            desktop-artifacts/**/*.tar.gz.sig
+            desktop-artifacts/**/SHA256SUMS*.txt
           )
 
           if [ ${#FILES[@]} -gt 0 ]; then
@@ -240,29 +293,8 @@ jobs:
               '. + {"windows-aarch64": {"url": $url, "signature": $sig}}')
           fi
 
-          # Linux x64 AppImage
-          APPIMAGE=$(find desktop-artifacts -name "*_amd64.AppImage" ! -name "*.sig" 2>/dev/null | head -1)
-          APPIMAGE_SIG=$(find desktop-artifacts -name "*_amd64.AppImage.sig" 2>/dev/null | head -1)
-          if [ -n "$APPIMAGE" ]; then
-            APPIMAGE_FILE=$(basename "$APPIMAGE")
-            SIG=$(read_sig "$APPIMAGE_SIG")
-            PLATFORMS=$(echo "$PLATFORMS" | jq \
-              --arg url "${BASE_URL}/${APPIMAGE_FILE}" \
-              --arg sig "$SIG" \
-              '. + {"linux-x86_64": {"url": $url, "signature": $sig}}')
-          fi
-
-          # Linux arm64 AppImage
-          APPIMAGE_ARM=$(find desktop-artifacts -name "*_aarch64.AppImage" ! -name "*.sig" 2>/dev/null | head -1)
-          APPIMAGE_ARM_SIG=$(find desktop-artifacts -name "*_aarch64.AppImage.sig" 2>/dev/null | head -1)
-          if [ -n "$APPIMAGE_ARM" ]; then
-            APPIMAGE_ARM_FILE=$(basename "$APPIMAGE_ARM")
-            SIG=$(read_sig "$APPIMAGE_ARM_SIG")
-            PLATFORMS=$(echo "$PLATFORMS" | jq \
-              --arg url "${BASE_URL}/${APPIMAGE_ARM_FILE}" \
-              --arg sig "$SIG" \
-              '. + {"linux-aarch64": {"url": $url, "signature": $sig}}')
-          fi
+          # Note: Linux tarballs are not supported by Tauri's updater.
+          # Linux users update by re-running the installer script.
 
           # macOS arm64 .app.tar.gz (updater payload)
           APP_ARM=$(find desktop-artifacts -name "*_aarch64.app.tar.gz" 2>/dev/null | head -1)
