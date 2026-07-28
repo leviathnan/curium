@@ -1,9 +1,9 @@
 #!/bin/sh
 # Curium Linux installer
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/nylxar/curium/main/packages/desktop/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/nylxar/curium/main/packages/desktop/install.sh | sh -s --
 #   ./install.sh --file ./curium_0.6.4_linux-x86_64.tar.gz
-#   CIUM_VERSION=0.6.4 curl -fsSL …/install.sh | sh
+#   CIUM_VERSION=0.6.4 curl -fsSL …/install.sh | sh -s -
 #
 # Environment variables:
 #   CIUM_VERSION  - Install a specific version (e.g., "0.6.4")
@@ -97,6 +97,9 @@ install_linux() {
         printf '  install.sh                          Install latest from GitHub\n'
         printf '  install.sh --file ./curium.tar.gz   Install from local file\n'
         printf '  CIUM_VERSION=0.6.4 install.sh       Install specific version\n'
+        printf '\nWhen piping:\n'
+        printf '  curl -fsSL …/install.sh | sh -s --\n'
+        printf '  curl -fsSL …/install.sh | sh -s -- --file ./curium.tar.gz\n'
         exit 0
         ;;
       *) error "unknown option: $1" ;;
