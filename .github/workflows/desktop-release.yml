@@ -68,9 +68,6 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
     timeout-minutes: 60
-    defaults:
-      run:
-        working-directory: packages/desktop
 
     steps:
       - name: Check platform filter
@@ -156,6 +153,7 @@ jobs:
         if: >-
           steps.filter.outputs.run == 'true' &&
           runner.os == 'Linux'
+        working-directory: packages/desktop
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
