@@ -1,9 +1,9 @@
 {
-  "commit": "58cce1d9a9623c3cf0e028ae9432a0cae4f26160",
-  "shortCommit": "58cce1d",
+  "commit": "88366d19ac8c0c1c05299d800c411b40d3cfd3c3",
+  "shortCommit": "88366d1",
   "branch": "preview",
-  "commitDate": "2026-07-27 20:30:18 +0300",
-  "commitMessage": "pre-release v0.6.3",
+  "commitDate": "2026-07-28 18:28:45 +0300",
+  "commitMessage": "Update desktop-release.yml",
   "isDirty": true,
-  "buildDate": "2026-07-27T17:59:30.356Z"
+  "buildDate": "2026-07-29T08:16:39.436Z"
 }

@@ -32,65 +32,84 @@ jobs:
         include:
           # ── macOS (.dmg + .app.tar.gz for updater) ──────────────────────────
           - platform: macos-14
+            platform_group: macos
             args: "--target aarch64-apple-darwin --bundles dmg,app"
             artifact_suffix: macos-arm64
             target: aarch64-apple-darwin
           - platform: macos-14
+            platform_group: macos
             args: "--target x86_64-apple-darwin --bundles dmg,app"
             artifact_suffix: macos-x64
             target: x86_64-apple-darwin
 
           # ── Windows (.exe via NSIS) ────────────────────────────────────────
           - platform: windows-latest
+            platform_group: windows
             args: "--target x86_64-pc-windows-msvc --bundles nsis"
             artifact_suffix: windows-x64
             target: x86_64-pc-windows-msvc
           - platform: windows-latest
+            platform_group: windows
             args: "--target aarch64-pc-windows-msvc --bundles nsis"
             artifact_suffix: windows-arm64
             target: aarch64-pc-windows-msvc
 
-          # ── Linux (.AppImage) ──────────────────────────────────────────────
+          # ── Linux (tarball — no AppImage due to upstream bundler issues) ──
           - platform: ubuntu-22.04
-            args: "--target x86_64-unknown-linux-gnu --bundles appimage"
+            platform_group: linux
+            args: "--target x86_64-unknown-linux-gnu --no-bundle"
             artifact_suffix: linux-x64
             target: x86_64-unknown-linux-gnu
           - platform: ubuntu-24.04-arm
-            args: "--target aarch64-unknown-linux-gnu --bundles appimage"
+            platform_group: linux
+            args: "--target aarch64-unknown-linux-gnu --no-bundle"
             artifact_suffix: linux-arm64
             target: aarch64-unknown-linux-gnu
 
     runs-on: ${{ matrix.platform }}
     timeout-minutes: 60
-    defaults:
-      run:
-        working-directory: packages/desktop
 
     steps:
+      - name: Check platform filter
+        id: filter
+        if: >-
+          github.event_name == 'push' ||
+          github.event.inputs.platform == 'all' ||
+          github.event.inputs.platform == matrix.platform_group
+        shell: bash
+        run: echo "run=true" >> "$GITHUB_OUTPUT"
+
       - name: Checkout
+        if: steps.filter.outputs.run == 'true'
         uses: actions/checkout@v6
 
       - name: Setup Node.js
+        if: steps.filter.outputs.run == 'true'
         uses: actions/setup-node@v6
         with:
           node-version: lts/*
 
       - name: Enable Corepack
+        if: steps.filter.outputs.run == 'true'
         run: corepack enable && corepack prepare pnpm@11.8.0 --activate
 
       - name: Install Rust stable
+        if: steps.filter.outputs.run == 'true'
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
 
       - name: Rust cache
+        if: steps.filter.outputs.run == 'true'
         uses: swatinem/rust-cache@v2
         with:
           workspaces: packages/desktop/src-tauri -> target
           shared-key: ${{ matrix.artifact_suffix }}
 
       - name: Install Linux dependencies (x64)
-        if: runner.os == 'Linux' && matrix.target == 'x86_64-unknown-linux-gnu'
+        if: >-
+          steps.filter.outputs.run == 'true' &&
+          runner.os == 'Linux' && matrix.target == 'x86_64-unknown-linux-gnu'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -101,7 +120,9 @@ jobs:
             xdg-utils
 
       - name: Install Linux dependencies (arm64)
-        if: runner.os == 'Linux' && matrix.target == 'aarch64-unknown-linux-gnu'
+        if: >-
+          steps.filter.outputs.run == 'true' &&
+          runner.os == 'Linux' && matrix.target == 'aarch64-unknown-linux-gnu'
         run: |
           sudo dpkg --add-architecture arm64
           sudo apt-get update
@@ -113,9 +134,11 @@ jobs:
             xdg-utils
 
       - name: Install frontend dependencies
+        if: steps.filter.outputs.run == 'true'
         run: corepack pnpm install --frozen-lockfile
 
       - name: Build desktop app
+        if: steps.filter.outputs.run == 'true'
         uses: tauri-apps/tauri-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -127,7 +150,71 @@ jobs:
           tauriScript: corepack pnpm exec tauri
           args: ${{ matrix.args }}
 
+      - name: Package Linux tarball
+        if: >-
+          steps.filter.outputs.run == 'true' &&
+          runner.os == 'Linux'
+        working-directory: packages/desktop
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+
+          VERSION="${GITHUB_REF_NAME#v}"
+          ARCH="${{ matrix.target == 'x86_64-unknown-linux-gnu' && 'x86_64' || 'aarch64' }}"
+          STAGING_DIR="curium-${VERSION}-linux-${ARCH}"
+
+          mkdir -p "${STAGING_DIR}/bin"
+          mkdir -p "${STAGING_DIR}/share/icons/hicolor/512x512/apps"
+          mkdir -p "${STAGING_DIR}/share/applications"
+
+          # Copy binary
+          BINARY=$(find src-tauri/target/*/release -maxdepth 1 -name 'curium' -type f ! -name '*.d' | head -1)
+          cp "${BINARY}" "${STAGING_DIR}/bin/curium"
+          chmod +x "${STAGING_DIR}/bin/curium"
+
+          # Copy icon
+          cp src-tauri/icons/icon.png "${STAGING_DIR}/share/icons/hicolor/512x512/apps/curium.png"
+
+          # Create desktop entry
+          printf '%s\n' \
+            "[Desktop Entry]" \
+            "Name=Curium" \
+            "Comment=Privacy-first QR code customizer and generator" \
+            "Exec=curium %U" \
+            "Icon=curium" \
+            "Terminal=false" \
+            "Type=Application" \
+            "Categories=Utility;" \
+            > "${STAGING_DIR}/share/applications/curium.desktop"
+
+          # Create tarball
+          TARBALL="curium_${VERSION}_linux-${ARCH}.tar.gz"
+          tar -czf "${TARBALL}" "${STAGING_DIR}"
+          rm -rf "${STAGING_DIR}"
+
+          # Sign tarball
+          corepack pnpm exec tauri signer sign "${TARBALL}"
+          test -s "${TARBALL}.sig"
+
+          # Generate checksum
+          CHECKSUM_FILE="SHA256SUMS-linux-${ARCH}.txt"
+          sha256sum "${TARBALL}" > "${CHECKSUM_FILE}"
+
+          # GPG sign checksums
+          printf '%s' "${GPG_PRIVATE_KEY}" | base64 --decode | gpg --batch --quiet --import
+          GPG_FINGERPRINT="C7EB5A5C29492428E4658CD98A836CEB0E21C555"
+          gpg --batch --list-secret-keys "$GPG_FINGERPRINT" >/dev/null
+          echo "Signing with key fingerprint: ${GPG_FINGERPRINT}"
+          gpg --batch --yes --pinentry-mode loopback --local-user "$GPG_FINGERPRINT" --detach-sign --armor "${CHECKSUM_FILE}"
+          test -s "${CHECKSUM_FILE}.asc"
+
+          echo "Created ${TARBALL}"
+
       - name: Upload desktop artifacts
+        if: steps.filter.outputs.run == 'true'
         uses: actions/upload-artifact@v7
         with:
           name: desktop-${{ matrix.artifact_suffix }}
@@ -138,8 +225,10 @@ jobs:
             packages/desktop/src-tauri/target/*/release/bundle/**/*.app.tar.gz.sig
             packages/desktop/src-tauri/target/*/release/bundle/**/*.exe
             packages/desktop/src-tauri/target/*/release/bundle/**/*.exe.sig
-            packages/desktop/src-tauri/target/*/release/bundle/**/*.AppImage
-            packages/desktop/src-tauri/target/*/release/bundle/**/*.AppImage.sig
+            packages/desktop/*.tar.gz
+            packages/desktop/*.tar.gz.sig
+            packages/desktop/SHA256SUMS*.txt
+            packages/desktop/SHA256SUMS*.asc
           if-no-files-found: warn
           retention-days: 14
 
@@ -188,8 +277,10 @@ jobs:
             desktop-artifacts/**/*.app.tar.gz.sig
             desktop-artifacts/**/*.exe
             desktop-artifacts/**/*.exe.sig
-            desktop-artifacts/**/*.AppImage
-            desktop-artifacts/**/*.AppImage.sig
+            desktop-artifacts/**/*.tar.gz
+            desktop-artifacts/**/*.tar.gz.sig
+            desktop-artifacts/**/SHA256SUMS*.txt
+            desktop-artifacts/**/SHA256SUMS*.asc
           )
 
           if [ ${#FILES[@]} -gt 0 ]; then
@@ -240,29 +331,8 @@ jobs:
               '. + {"windows-aarch64": {"url": $url, "signature": $sig}}')
           fi
 
-          # Linux x64 AppImage
-          APPIMAGE=$(find desktop-artifacts -name "*_amd64.AppImage" ! -name "*.sig" 2>/dev/null | head -1)
-          APPIMAGE_SIG=$(find desktop-artifacts -name "*_amd64.AppImage.sig" 2>/dev/null | head -1)
-          if [ -n "$APPIMAGE" ]; then
-            APPIMAGE_FILE=$(basename "$APPIMAGE")
-            SIG=$(read_sig "$APPIMAGE_SIG")
-            PLATFORMS=$(echo "$PLATFORMS" | jq \
-              --arg url "${BASE_URL}/${APPIMAGE_FILE}" \
-              --arg sig "$SIG" \
-              '. + {"linux-x86_64": {"url": $url, "signature": $sig}}')
-          fi
-
-          # Linux arm64 AppImage
-          APPIMAGE_ARM=$(find desktop-artifacts -name "*_aarch64.AppImage" ! -name "*.sig" 2>/dev/null | head -1)
-          APPIMAGE_ARM_SIG=$(find desktop-artifacts -name "*_aarch64.AppImage.sig" 2>/dev/null | head -1)
-          if [ -n "$APPIMAGE_ARM" ]; then
-            APPIMAGE_ARM_FILE=$(basename "$APPIMAGE_ARM")
-            SIG=$(read_sig "$APPIMAGE_ARM_SIG")
-            PLATFORMS=$(echo "$PLATFORMS" | jq \
-              --arg url "${BASE_URL}/${APPIMAGE_ARM_FILE}" \
-              --arg sig "$SIG" \
-              '. + {"linux-aarch64": {"url": $url, "signature": $sig}}')
-          fi
+          # Note: Linux tarballs are not supported by Tauri's updater.
+          # Linux users update by re-running the installer script.
 
           # macOS arm64 .app.tar.gz (updater payload)
           APP_ARM=$(find desktop-artifacts -name "*_aarch64.app.tar.gz" 2>/dev/null | head -1)

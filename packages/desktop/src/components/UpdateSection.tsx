@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { invoke } from "@tauri-apps/api/core";
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
 import {
@@ -20,6 +21,56 @@ type UpdateStatus =
   | { state: "error"; message: string };
 
 const isTauri = typeof window !== "undefined" && !!(window as any).__TAURI__;
+const isLinux =
+  typeof navigator !== "undefined" && navigator.userAgent.includes("Linux");
+
+async function checkLinuxUpdate(): Promise<{
+  version: string;
+  body: string;
+} | null> {
+  const resp = await fetch(
+    "https://api.github.com/repos/nylxar/curium/releases/latest",
+    {
+      headers: {
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2026-03-10",
+      },
+    },
+  );
+  if (!resp.ok) {
+    throw new Error(`Update check failed (${resp.status})`);
+  }
+  const data = await resp.json();
+  const latest = data.tag_name?.replace(/^v/, "");
+  if (!latest || !isNewerVersion(latest, pkg.version)) return null;
+  return { version: latest, body: data.body ?? "" };
+}
+
+function isNewerVersion(candidate: string, current: string): boolean {
+  const parse = (version: string) =>
+    version
+      .split("-", 1)[0]
+      .split(".")
+      .map((part) => Number.parseInt(part, 10));
+  const next = parse(candidate);
+  const installed = parse(current);
+
+  if (
+    next.length !== 3 ||
+    installed.length !== 3 ||
+    next.some((part) => !Number.isInteger(part) || part < 0) ||
+    installed.some((part) => !Number.isInteger(part) || part < 0)
+  ) {
+    return false;
+  }
+
+  for (let index = 0; index < 3; index += 1) {
+    if (next[index] !== installed[index]) {
+      return next[index] > installed[index];
+    }
+  }
+  return false;
+}
 
 export function UpdateSection() {
   const [status, setStatus] = useState<UpdateStatus>({ state: "idle" });
@@ -27,15 +78,28 @@ export function UpdateSection() {
   const checkForUpdates = useCallback(async () => {
     setStatus({ state: "checking" });
     try {
-      const update = await check();
-      if (update) {
-        setStatus({
-          state: "available",
-          version: update.version,
-          body: update.body ?? "",
-        });
+      if (isLinux) {
+        const result = await checkLinuxUpdate();
+        if (result) {
+          setStatus({
+            state: "available",
+            version: result.version,
+            body: result.body,
+          });
+        } else {
+          setStatus({ state: "up-to-date" });
+        }
       } else {
-        setStatus({ state: "up-to-date" });
+        const update = await check();
+        if (update) {
+          setStatus({
+            state: "available",
+            version: update.version,
+            body: update.body ?? "",
+          });
+        } else {
+          setStatus({ state: "up-to-date" });
+        }
       }
     } catch (e) {
       setStatus({
@@ -49,12 +113,17 @@ export function UpdateSection() {
     if (status.state !== "available") return;
     setStatus({ state: "downloading" });
     try {
-      const update = await check();
-      if (update) {
-        await update.downloadAndInstall();
-        setStatus({ state: "ready", version: update.version });
+      if (isLinux) {
+        await invoke("run_updater");
+        setStatus({ state: "ready", version: status.version });
       } else {
-        setStatus({ state: "up-to-date" });
+        const update = await check();
+        if (update) {
+          await update.downloadAndInstall();
+          setStatus({ state: "ready", version: update.version });
+        } else {
+          setStatus({ state: "up-to-date" });
+        }
       }
     } catch (e) {
       setStatus({
@@ -120,7 +189,7 @@ export function UpdateSection() {
             onClick={downloadAndInstall}
             style={{ width: "100%" }}
           >
-            Download & Install
+            {isLinux ? "Install Update" : "Download & Install"}
           </button>
         </div>
       )}
@@ -128,7 +197,7 @@ export function UpdateSection() {
       {status.state === "downloading" && (
         <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--text-muted)", fontSize: 12 }}>
           <SpinnerIcon size={14} className="spin" />
-          Downloading...
+          {isLinux ? "Installing..." : "Downloading..."}
         </div>
       )}
 
