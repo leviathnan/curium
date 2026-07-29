@@ -16,6 +16,54 @@ set -eu
 REPO="nylxar/curium"
 GITHUB="https://github.com"
 
+RELEASE_SIGNING_KEY='-----BEGIN PGP PUBLIC KEY BLOCK-----
+Comment: C7EB 5A5C 2949 2428 E465  8CD9 8A83 6CEB 0E21 C555
+Comment: <nylxar@curium.design>
+Comment: Curium Release Signing Key
+
+xjMEampMUxYJKwYBBAHaRw8BAQdAlkdPcO2tj+JinaDGcbYBPTyU88EobwpCQS0q
+KxLIT4/CwBEEHxYKAIMFgmpqTFMFiQWkj70DCwkHCRCKg2zrDiHFVUcUAAAAAAAe
+ACBzYWx0QG5vdGF0aW9ucy5zZXF1b2lhLXBncC5vcmfBasJRUjImgzPgqOfmU2DP
+QchyAiKeBJZISvyLj7DCOAMVCggCmwECHgkWIQTH61pcKUkkKORljNmKg2zrDiHF
+VQAAkgEA/3D9oXbSuet/nG68G96WzJXAHBYlVLvyR0YRLnSIpxbtAPwL33ID73hR
+N2FkwQwk3qmMUBSBuq276V/t7UQZ1aJqB80WPG55bHhhckBjdXJpdW0uZGVzaWdu
+PsLAEQQTFgoAgwWCampMUwWJBaSPvQMLCQcJEIqDbOsOIcVVRxQAAAAAAB4AIHNh
+bHRAbm90YXRpb25zLnNlcXVvaWEtcGdwLm9yZ7bgVjYgzNy2WgaNYZFSkb2yz7EV
+bUE/GHnIehM13IJaAxUKCAKbAQIeCRYhBMfrWlwpSSQo5GWM2YqDbOsOIcVVAABW
+qAEAi/quA3Ld99n11Ca9LPWF5aCnW1bASqhU/JyiDR4FeDoBANkJLYbUo5sGAZsa
+gZUuOgWyG87+D9iD/DxOgDCnLf4LzRpDdXJpdW0gUmVsZWFzZSBTaWduaW5nIEtl
+ecLAFAQTFgoAhgWCampMUwWJBaSPvQMLCQcJEIqDbOsOIcVVRxQAAAAAAB4AIHNh
+bHRAbm90YXRpb25zLnNlcXVvaWEtcGdwLm9yZwJwcKtw/U5FfDR5Vtt+nXNqUbyC
+AU5ikufESQuFRkdfAxUKCAKZAQKbAQIeCRYhBMfrWlwpSSQo5GWM2YqDbOsOIcVV
+AAAagEAkDbqop9fDrHv2ghDqt/9go5Z8O1J568vxRmd8wER1nYA/RSumBdLpEqU
+JUjHeGHeR/voz0MFu3Nb5SFeK1VEAvYNzjMEampMUxYJKwYBBAHaRw8BAQdAHHUI
+QneYWsSxUxgdiE8+iiWinbn7BmqdxaFt8kMKkhTCwMUEGBYKATcFgmpqTFMFiQWk
+j70JEIqDbOsOIcVVRxQAAAAAAB4AIHNhbHRAbm90YXRpb25zLnNlcXVvaWEtcGdw
+Lm9yZ1sELxP6vwyrmQWiqVWRBsdW+vMJYSCdHIzZROZF6dfmApsCvqAEGRYKAG8F
+gmpqTFMJENNpiVODerR5RxQAAAAAAB4AIHNhbHRAbm90YXRpb25zLnNlcXVvaWEt
+cGdwLm9yZ/zvJukNZ2Tm8ixviecZ2VVvoS45RwEqtm4jMnNQ8yG2FiEE9pTcIzAb
+hos7/YbR02mJU4N6tHkAAGl2AQDX9vyb2TlmWe91kWIKdaeKW98hV/43v+edRnCt
+JfDJsQD/eX/uvR5UYXn977qH7Aelx5qyidFR/u7ZWaJAFQvetQUWIQTH61pcKUkk
+KORljNmKg2zrDiHFVQAAlKkBAP/KDymCJ6sjbnx7CwPzmF/7V0U5Ul7evscjy87v
+RFb7AQDko97N94JCLL0gwcN8cHQJFIpxMlwU+JKAKa24xo7yAs4zBGpqTFMWCSsG
+AQQB2kcPAQEHQN0uQEYJlYMaxspjRP+BTsry7W/e1vaRwot868jRYddtwsDFBBgW
+CgE3BYJqakxTBYkFpI+9CRCKg2zrDiHFVUcUAAAAAAAeACBzYWx0QG5vdGF0aW9u
+cy5zZXF1b2lhLXBncC5vcmf+7cVqekiRtmCNu51YQq66k30u1ljRT544OAFOXW2Y
+QwKbIL6gBBkWCgBvBYJqakxTCRBrY6K/WFaiwEcUAAAAAAAeACBzYWx0QG5vdGF0
+aW9ucy5zZXF1b2lhLXBncC5vcme4gPrPme5tpkX7X4HfMC7qFW/2bXWhinR3IBRA
+4rNeGxYhBCIurK+DadcfVSD0Nmtjor9YVqLAAAD39AD+M80HEwaCTlgIjd5RGe0Z
+rfA8lYxqRi6kArHJ38uF6YoBAOveDHiHJo9C6Ehq1I5imVvw6Uhzbo2bNMP9VlhZ
+Hk8CFiEEx+taXClJJCjkZYzZioNs6w4hxVUAAKmXAP4xkWkSSGYZV3DB6F3Tu+Bm
+orlzcZ6fhvRX/GZW2CfUowEA1vb+TAxRQoZnKJkjxAdQFWBMG7SGKK4UX2KHdtQe
+DA/OOARqakxTEgorBgEEAZdVAQUBAQdAG7vK6QHmr8R7XFOeACZVLoO1meJu2Lpy
+AEjqPTemfVIDAQgHwsAGBBgWCgB4BYJqakxTBYkFpI+9CRCKg2zrDiHFVUcUAAAA
+AAAeACBzYWx0QG5vdGF0aW9ucy5zZXF1b2lhLXBncC5vcme0rfc84lsyz4/PeZT0
++a2UKklwUzFDD8XiZ2LpY772RwKbDBYhBMfrWlwpSSQo5GWM2YqDbOsOIcVVAAC5
+fwD9EeKQn2jabam70QBTrW9bg4bIfRSVMlsrGqvEyg+H9IIA/jzFZefp5HisX2Bv
+IPFZHZorw1FBsgtKf5bktMYh9kYF
+=/nRy
+-----END PGP PUBLIC KEY BLOCK-----'
+
 info() { printf '  \033[1;34m>\033[0m %s\n' "$@"; }
 success() { printf '  \033[1;32m>\033[0m %s\n' "$@"; }
 error() { printf '  \033[1;31merror:\033[0m %s\n' "$@" >&2; exit 1; }
@@ -205,6 +253,27 @@ verify_checksum() {
   success "Checksum verified"
 }
 
+verify_signature() {
+  file="$1"; sig_file="$2"
+  command -v gpg > /dev/null 2>&1 || error "gpg is required for release verification — install gnupg"
+  [ -f "$sig_file" ] || error "signature file not found: $sig_file"
+  keyring_dir=$(mktemp -d)
+  keyring="$keyring_dir/release-keyring.gpg"
+  pubkey="$keyring_dir/release-signing-key.gpg"
+  printf '%s\n' "$RELEASE_SIGNING_KEY" > "$pubkey"
+  if ! gpg --batch --no-default-keyring --keyring "$keyring" --import "$pubkey"; then
+    rm -rf "$keyring_dir"
+    error "could not import the embedded release signing key"
+  fi
+  if gpg --batch --no-default-keyring --keyring "$keyring" --verify "$sig_file" "$file"; then
+    rm -rf "$keyring_dir"
+    success "Release signature verified"
+  else
+    rm -rf "$keyring_dir"
+    error "release signature verification failed — release may be tampered with"
+  fi
+}
+
 update_icon_cache() {
   icons_base="${XDG_DATA_HOME:-$HOME/.local/share}/icons/hicolor"
   if command -v gtk-update-icon-cache > /dev/null 2>&1; then
@@ -332,7 +401,10 @@ do_install() {
     info "Downloading ${TARBALL}..."
     download "${BASE_URL}/${TARBALL}" "$TARBALL_PATH"
 
-    download "${BASE_URL}/${CHECKSUMS}" "$TMPDIR_INSTALL/${CHECKSUMS}" 2>/dev/null || true
+    info "Downloading checksums and signature..."
+    download "${BASE_URL}/${CHECKSUMS}" "$TMPDIR_INSTALL/${CHECKSUMS}"
+    download "${BASE_URL}/${CHECKSUMS}.asc" "$TMPDIR_INSTALL/${CHECKSUMS}.asc"
+    verify_signature "$TMPDIR_INSTALL/${CHECKSUMS}" "$TMPDIR_INSTALL/${CHECKSUMS}.asc"
     verify_checksum "$TARBALL_PATH" "$TMPDIR_INSTALL/${CHECKSUMS}"
   fi
 
