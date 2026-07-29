@@ -158,6 +158,7 @@ jobs:
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         run: |
           set -euo pipefail
 
@@ -202,6 +203,14 @@ jobs:
           CHECKSUM_FILE="SHA256SUMS-linux-${ARCH}.txt"
           sha256sum "${TARBALL}" > "${CHECKSUM_FILE}"
 
+          # GPG sign checksums
+          printf '%s' "${GPG_PRIVATE_KEY}" | base64 --decode | gpg --batch --quiet --import
+          GPG_FINGERPRINT="C7EB5A5C29492428E4658CD98A836CEB0E21C555"
+          gpg --batch --list-secret-keys "$GPG_FINGERPRINT" >/dev/null
+          echo "Signing with key fingerprint: ${GPG_FINGERPRINT}"
+          gpg --batch --yes --pinentry-mode loopback --local-user "$GPG_FINGERPRINT" --detach-sign --armor "${CHECKSUM_FILE}"
+          test -s "${CHECKSUM_FILE}.asc"
+
           echo "Created ${TARBALL}"
 
       - name: Upload desktop artifacts
@@ -219,6 +228,7 @@ jobs:
             packages/desktop/*.tar.gz
             packages/desktop/*.tar.gz.sig
             packages/desktop/SHA256SUMS*.txt
+            packages/desktop/SHA256SUMS*.asc
           if-no-files-found: warn
           retention-days: 14
 
@@ -270,6 +280,7 @@ jobs:
             desktop-artifacts/**/*.tar.gz
             desktop-artifacts/**/*.tar.gz.sig
             desktop-artifacts/**/SHA256SUMS*.txt
+            desktop-artifacts/**/SHA256SUMS*.asc
           )
 
           if [ ${#FILES[@]} -gt 0 ]; then
