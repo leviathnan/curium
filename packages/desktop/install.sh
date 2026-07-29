@@ -1,7 +1,7 @@
 #!/bin/sh
 # Curium Linux installer
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/nylxar/curium/d4a713d5a190575bc37c729a8573ae2ffad539c4/packages/desktop/install.sh | sh -s --
+#   curl -fsSL https://raw.githubusercontent.com/nylxar/curium/refs/heads/main/packages/desktop/install.sh | sh -s --
 #   ./install.sh --file ./curium_0.6.4_linux-x86_64.tar.gz
 #   curl -fsSL …/install.sh | sh -s --
 #   ./install.sh --uninstall
