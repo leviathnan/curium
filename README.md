@@ -133,14 +133,16 @@ Curium desktop is in beta. Expect some things to break.
 
 **Linux:** Install with one command:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/nylxar/curium/refs/heads/main/packages/desktop/install.sh | sh -s --
+curl -fsSL https://raw.githubusercontent.com/nylxar/curium/d4a713d5a190575bc37c729a8573ae2ffad539c4/packages/desktop/install.sh | sh -s --
 ```
 Or download and run manually:
 ```bash
-curl -fsSLO https://raw.githubusercontent.com/nylxar/curium/refs/heads/main/packages/desktop/install.sh
+curl -fsSL https://raw.githubusercontent.com/nylxar/curium/d4a713d5a190575bc37c729a8573ae2ffad539c4/packages/desktop/install.sh -o install.sh
 sh install.sh
 ```
 The installer handles PATH setup, icons, and desktop entries. To remove: `sh install.sh --uninstall`.
+
+To install a specific version, set `CIUM_VERSION`, for example: `CIUM_VERSION=0.6.4 sh install.sh`.
 
 Linux users facing issues with `webkit2gtk-4.1` may use the web version (releasing soon) until Tauri upstream or I come to a better solution.
 
