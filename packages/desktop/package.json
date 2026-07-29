@@ -33,6 +33,7 @@
   "dependencies": {
     "@curium/shared": "workspace:*",
     "@phosphor-icons/react": "^2.1.10",
+    "@tauri-apps/api": "^2.3.0",
     "@tauri-apps/plugin-process": "^2.3.1",
     "@tauri-apps/plugin-updater": "^2.10.1",
     "fflate": "^0.8.3",
