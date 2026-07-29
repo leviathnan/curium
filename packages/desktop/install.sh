@@ -385,6 +385,7 @@ do_uninstall() {
   info "Removing Curium..."
 
   rm -rf "$app_dir"
+  rm -rf "$data_home/com.curium.desktop"
   rm -f "$bin_dir/curium"
   rm -f "$icons_dir/curium.png"
   rm -f "$applications_dir/curium.desktop"
