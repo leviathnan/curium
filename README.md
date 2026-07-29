@@ -125,23 +125,6 @@ With official releases for Android, Windows, macOS, Linux, CLI, Web, and eventua
 
 ---
 
-## What's Coming
-
-- [ ] CLI tool — headless QR generation for scripts and CI/CD
-- [ ] Web app — browser-based generator
-- [ ] iOS app — full feature parity with Android
-- [ ] QR-from-image — upload an image, generate a QR that visually matches its color palette
-- [ ] Animated QR — QR that transitions between two states
-- [ ] Multi-color regions — different colors per data region
-- [ ] QR version override — force specific module count
-- [ ] Eye size slider (5–9 modules)
-- [ ] Per-eye size control (each eye independently sized)
-- [ ] Drag-to-reposition eyes within the grid
-- [ ] Scan confidence indicator
-- [ ] QR history tags / folders
- 
----
-
 ### Install Desktop
 
 Curium desktop is in beta. Expect some things to break.
@@ -161,6 +144,24 @@ The installer handles PATH setup, icons, and desktop entries. To remove: `sh ins
 
 Linux users facing issues with `webkit2gtk-4.1` may use the web version (releasing soon) until Tauri upstream or I come to a better solution.
 
+---
+
+## What's Coming
+
+- [ ] CLI tool — headless QR generation for scripts and CI/CD
+- [ ] Web app — browser-based generator
+- [ ] iOS app — full feature parity with Android
+- [ ] QR-from-image — upload an image, generate a QR that visually matches its color palette
+- [ ] Animated QR — QR that transitions between two states
+- [ ] Multi-color regions — different colors per data region
+- [ ] QR version override — force specific module count
+- [ ] Eye size slider (5–9 modules)
+- [ ] Per-eye size control (each eye independently sized)
+- [ ] Drag-to-reposition eyes within the grid
+- [ ] Scan confidence indicator
+- [ ] QR history tags / folders
+ 
+---
 
 ## Tech Stack
 
