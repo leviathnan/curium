@@ -76,6 +76,7 @@ jobs:
           github.event_name == 'push' ||
           github.event.inputs.platform == 'all' ||
           github.event.inputs.platform == matrix.platform_group
+        shell: bash
         run: echo "run=true" >> "$GITHUB_OUTPUT"
 
       - name: Checkout
