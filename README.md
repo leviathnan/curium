@@ -142,6 +142,26 @@ With official releases for Android, Windows, macOS, Linux, CLI, Web, and eventua
  
 ---
 
+### Install Desktop
+
+Curium desktop is in beta. Expect some things to break.
+
+**macOS & Windows:** Download the `.dmg` or `.exe` from [Releases](https://github.com/nylxar/curium/releases) and install as usual.
+
+**Linux:** Install with one command:
+```bash
+curl -fsSL https://raw.githubusercontent.com/nylxar/curium/refs/heads/main/packages/desktop/install.sh | sh -s --
+```
+Or download and run manually:
+```bash
+curl -fsSLO https://raw.githubusercontent.com/nylxar/curium/refs/heads/main/packages/desktop/install.sh
+sh install.sh
+```
+The installer handles PATH setup, icons, and desktop entries. To remove: `sh install.sh --uninstall`.
+
+Linux users facing issues with `webkit2gtk-4.1` may use the web version (releasing soon) until Tauri upstream or I come to a better solution.
+
+
 ## Tech Stack
 
 | Layer | Mobile | Desktop |
@@ -218,7 +238,7 @@ pnpm tauri dev
 Releases are built automatically via GitHub Actions when a `v*` tag is pushed.
 
 - **Android**: Creates draft release with APK/AAB splits
-- **Desktop**: Builds DMG (macOS), NSIS (Windows), AppImage (Linux) and uploads to the same release
+- **Desktop**: Builds DMG (macOS), NSIS (Windows), tarball (Linux) and uploads to the same release
 
 Or download the latest from [Releases](https://github.com/nylxar/curium/releases).
 
