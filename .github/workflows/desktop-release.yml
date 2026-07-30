@@ -200,7 +200,7 @@ jobs:
           test -s "${TARBALL}.sig"
 
           # Generate checksum
-          CHECKSUM_FILE="SHA256SUMS-linux-${ARCH}.txt"
+          CHECKSUM_FILE="curium_${VERSION}_linux-${ARCH}.sha256"
           sha256sum "${TARBALL}" > "${CHECKSUM_FILE}"
 
           # GPG sign checksums
@@ -225,10 +225,10 @@ jobs:
             packages/desktop/src-tauri/target/*/release/bundle/**/*.app.tar.gz.sig
             packages/desktop/src-tauri/target/*/release/bundle/**/*.exe
             packages/desktop/src-tauri/target/*/release/bundle/**/*.exe.sig
-            packages/desktop/*.tar.gz
-            packages/desktop/*.tar.gz.sig
-            packages/desktop/SHA256SUMS*.txt
-            packages/desktop/SHA256SUMS*.asc
+            packages/desktop/curium_*.tar.gz
+            packages/desktop/curium_*.tar.gz.sig
+            packages/desktop/curium_*.sha256
+            packages/desktop/curium_*.sha256.asc
           if-no-files-found: warn
           retention-days: 14
 
@@ -270,6 +270,31 @@ jobs:
 
           # Upload all desktop artifacts to the release
           shopt -s nullglob
+
+          # Rename macOS .app.tar.gz to consistent naming
+          for f in desktop-artifacts/**/*.app.tar.gz; do
+            dir=$(dirname "$f")
+            base=$(basename "$f")
+            if [[ "$base" == Curium.app.tar.gz ]]; then
+              if [[ "$f" == *aarch64* ]]; then
+                mv "$f" "${dir}/curium_${VERSION}_macos-arm64.app.tar.gz"
+              elif [[ "$f" == *x64* ]]; then
+                mv "$f" "${dir}/curium_${VERSION}_macos-x64.app.tar.gz"
+              fi
+            fi
+          done
+          for f in desktop-artifacts/**/*.app.tar.gz.sig; do
+            dir=$(dirname "$f")
+            base=$(basename "$f")
+            if [[ "$base" == Curium.app.tar.gz.sig ]]; then
+              if [[ "$f" == *aarch64* ]]; then
+                mv "$f" "${dir}/curium_${VERSION}_macos-arm64.app.tar.gz.sig"
+              elif [[ "$f" == *x64* ]]; then
+                mv "$f" "${dir}/curium_${VERSION}_macos-x64.app.tar.gz.sig"
+              fi
+            fi
+          done
+
           FILES=(
             desktop-artifacts/**/*.dmg
             desktop-artifacts/**/*.dmg.sig
@@ -279,8 +304,8 @@ jobs:
             desktop-artifacts/**/*.exe.sig
             desktop-artifacts/**/*.tar.gz
             desktop-artifacts/**/*.tar.gz.sig
-            desktop-artifacts/**/SHA256SUMS*.txt
-            desktop-artifacts/**/SHA256SUMS*.asc
+            desktop-artifacts/**/*.sha256
+            desktop-artifacts/**/*.sha256.asc
           )
 
           if [ ${#FILES[@]} -gt 0 ]; then
@@ -335,8 +360,8 @@ jobs:
           # Linux users update by re-running the installer script.
 
           # macOS arm64 .app.tar.gz (updater payload)
-          APP_ARM=$(find desktop-artifacts -name "*_aarch64.app.tar.gz" 2>/dev/null | head -1)
-          APP_ARM_SIG=$(find desktop-artifacts -name "*_aarch64.app.tar.gz.sig" 2>/dev/null | head -1)
+          APP_ARM=$(find desktop-artifacts -name "curium_*_macos-arm64.app.tar.gz" 2>/dev/null | head -1)
+          APP_ARM_SIG=$(find desktop-artifacts -name "curium_*_macos-arm64.app.tar.gz.sig" 2>/dev/null | head -1)
           if [ -n "$APP_ARM" ]; then
             APP_ARM_FILE=$(basename "$APP_ARM")
             SIG=$(read_sig "$APP_ARM_SIG")
@@ -347,8 +372,8 @@ jobs:
           fi
 
           # macOS x64 .app.tar.gz (updater payload)
-          APP_X64=$(find desktop-artifacts -name "*_x64.app.tar.gz" 2>/dev/null | head -1)
-          APP_X64_SIG=$(find desktop-artifacts -name "*_x64.app.tar.gz.sig" 2>/dev/null | head -1)
+          APP_X64=$(find desktop-artifacts -name "curium_*_macos-x64.app.tar.gz" 2>/dev/null | head -1)
+          APP_X64_SIG=$(find desktop-artifacts -name "curium_*_macos-x64.app.tar.gz.sig" 2>/dev/null | head -1)
           if [ -n "$APP_X64" ]; then
             APP_X64_FILE=$(basename "$APP_X64")
             SIG=$(read_sig "$APP_X64_SIG")
