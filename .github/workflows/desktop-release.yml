@@ -239,7 +239,7 @@ jobs:
     timeout-minutes: 90
     steps:
       - name: Download all desktop artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: desktop-*
           path: desktop-artifacts
@@ -257,7 +257,7 @@ jobs:
 
           # Wait for Android workflow to create the release (up to 90 min)
           WAITED=0
-          while ! gh release list --limit 1000 --json tagName --jq '.[].tagName' | grep -Fxq -- "$TAG"; do
+          while ! gh release list --repo "$REPO" --limit 1000 --json tagName --jq '.[].tagName' | grep -Fxq -- "$TAG"; do
             if [ "$WAITED" -ge 5400 ]; then
               echo "Timed out waiting for release $TAG"
               exit 1
@@ -316,7 +316,7 @@ jobs:
           )
 
           if [ ${#FILES[@]} -gt 0 ]; then
-            gh release upload "$TAG" "${FILES[@]}" --clobber
+            gh release upload "$TAG" "${FILES[@]}" --repo "$REPO" --clobber
             echo "Uploaded ${#FILES[@]} desktop artifacts to $TAG"
           else
             echo "No desktop artifacts found to upload"
@@ -399,7 +399,7 @@ jobs:
               '{version: $version, notes: "Curium $version", pub_date: $pub_date, platforms: $platforms}' \
               > latest.json
 
-            gh release upload "$TAG" latest.json --clobber
+            gh release upload "$TAG" latest.json --repo "$REPO" --clobber
             echo "Generated and uploaded latest.json"
             cat latest.json
           else
