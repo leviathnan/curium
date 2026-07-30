@@ -133,11 +133,11 @@ Curium desktop is in beta. Expect some things to break.
 
 **Linux:** Install with one command:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/nylxar/curium/refs/heads/main/packages/desktop/install.sh | sh -s --
+curl -fsSL https://raw.githubusercontent.com/nylxar/curium/main/packages/desktop/install.sh | sh -s --
 ```
 Or download and run manually:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/nylxar/curium/refs/heads/main/packages/desktop/install.sh -o install.sh
+curl -fsSL https://raw.githubusercontent.com/nylxar/curium/main/packages/desktop/install.sh -o install.sh
 sh install.sh
 ```
 The installer handles PATH setup, icons, and desktop entries. To remove: `sh install.sh --uninstall`.
