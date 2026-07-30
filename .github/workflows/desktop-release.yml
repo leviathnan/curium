@@ -257,7 +257,7 @@ jobs:
 
           # Wait for Android workflow to create the release (up to 90 min)
           WAITED=0
-          while ! gh release view "$TAG" &>/dev/null; do
+          while ! gh release list --limit 1000 --json tagName --jq '.[].tagName' | grep -Fxq -- "$TAG"; do
             if [ "$WAITED" -ge 5400 ]; then
               echo "Timed out waiting for release $TAG"
               exit 1

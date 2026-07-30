@@ -1,5 +1,3 @@
-# v0.6.4
-
 ## Curium for Desktop (Pre-release)
 
 Curium is now available for Windows, macOS, and Linux. Generate, customize with full control over every detail — colors, eye shapes, pixel patterns, and more. Everything runs locally on your machine.
@@ -21,7 +19,7 @@ Curium is now available for Windows, macOS, and Linux. Generate, customize with 
 
 ---
 
-## Mobile v0.6.0
+## Mobile v0.6.4
 
 ### What's New
 - Share to Curium: send QR codes from other apps directly into Curium
