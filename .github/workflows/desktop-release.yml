@@ -243,7 +243,7 @@ jobs:
         with:
           pattern: desktop-*
           path: desktop-artifacts
-          merge-multiple: true
+          merge-multiple: false
 
       - name: Upload to existing release and generate updater JSON
         env:
@@ -276,7 +276,7 @@ jobs:
             dir=$(dirname "$f")
             base=$(basename "$f")
             if [[ "$base" == Curium.app.tar.gz ]]; then
-              if [[ "$f" == *aarch64* ]]; then
+              if [[ "$f" == *arm64* ]]; then
                 mv "$f" "${dir}/curium_${VERSION}_macos-arm64.app.tar.gz"
               elif [[ "$f" == *x64* ]]; then
                 mv "$f" "${dir}/curium_${VERSION}_macos-x64.app.tar.gz"
@@ -287,13 +287,20 @@ jobs:
             dir=$(dirname "$f")
             base=$(basename "$f")
             if [[ "$base" == Curium.app.tar.gz.sig ]]; then
-              if [[ "$f" == *aarch64* ]]; then
+              if [[ "$f" == *arm64* ]]; then
                 mv "$f" "${dir}/curium_${VERSION}_macos-arm64.app.tar.gz.sig"
               elif [[ "$f" == *x64* ]]; then
                 mv "$f" "${dir}/curium_${VERSION}_macos-x64.app.tar.gz.sig"
               fi
             fi
           done
+          # Verify all macOS .app.tar.gz files were renamed
+          UNRENAMED=$(find desktop-artifacts -name "Curium.app.tar.gz" 2>/dev/null)
+          if [ -n "$UNRENAMED" ]; then
+            echo "ERROR: macOS .app.tar.gz files were not renamed"
+            echo "$UNRENAMED"
+            exit 1
+          fi
 
           FILES=(
             desktop-artifacts/**/*.dmg
@@ -302,8 +309,8 @@ jobs:
             desktop-artifacts/**/*.app.tar.gz.sig
             desktop-artifacts/**/*.exe
             desktop-artifacts/**/*.exe.sig
-            desktop-artifacts/**/*.tar.gz
-            desktop-artifacts/**/*.tar.gz.sig
+            desktop-artifacts/**/*_linux-*.tar.gz
+            desktop-artifacts/**/*_linux-*.tar.gz.sig
             desktop-artifacts/**/*.sha256
             desktop-artifacts/**/*.sha256.asc
           )
