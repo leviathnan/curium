@@ -1,7 +1,7 @@
 #!/bin/sh
 # Curium Linux installer
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/nylxar/curium/refs/heads/main/packages/desktop/install.sh | sh -s --
+#   curl -fsSL https://raw.githubusercontent.com/nylxar/curium/main/packages/desktop/install.sh | sh -s --
 #   ./install.sh --file ./curium_0.6.4_linux-x86_64.tar.gz
 #   curl -fsSL …/install.sh | sh -s --
 #   ./install.sh --uninstall
@@ -394,7 +394,7 @@ do_install() {
   else
     get_version
     TARBALL="curium_${VERSION}_linux-${ARCH}.tar.gz"
-    CHECKSUMS="SHA256SUMS-linux-${ARCH}.txt"
+    CHECKSUMS="curium_${VERSION}_linux-${ARCH}.sha256"
     BASE_URL="$GITHUB/$REPO/releases/download/v${VERSION}"
 
     TARBALL_PATH="$TMPDIR_INSTALL/$TARBALL"
