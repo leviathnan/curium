@@ -269,29 +269,22 @@ jobs:
           echo "Release $TAG found"
 
           # Upload all desktop artifacts to the release
-          shopt -s nullglob
 
-          # Rename macOS .app.tar.gz to consistent naming
-          for f in desktop-artifacts/**/*.app.tar.gz; do
+          # Rename macOS .app.tar.gz to consistent naming (find is recursive, ** globs are not without globstar)
+          find desktop-artifacts -name "Curium.app.tar.gz" | while IFS= read -r f; do
             dir=$(dirname "$f")
-            base=$(basename "$f")
-            if [[ "$base" == Curium.app.tar.gz ]]; then
-              if [[ "$f" == *arm64* ]]; then
-                mv "$f" "${dir}/curium_${VERSION}_macos-arm64.app.tar.gz"
-              elif [[ "$f" == *x64* ]]; then
-                mv "$f" "${dir}/curium_${VERSION}_macos-x64.app.tar.gz"
-              fi
+            if [[ "$f" == *arm64* ]]; then
+              mv "$f" "${dir}/curium_${VERSION}_macos-arm64.app.tar.gz"
+            elif [[ "$f" == *x64* ]]; then
+              mv "$f" "${dir}/curium_${VERSION}_macos-x64.app.tar.gz"
             fi
           done
-          for f in desktop-artifacts/**/*.app.tar.gz.sig; do
+          find desktop-artifacts -name "Curium.app.tar.gz.sig" | while IFS= read -r f; do
             dir=$(dirname "$f")
-            base=$(basename "$f")
-            if [[ "$base" == Curium.app.tar.gz.sig ]]; then
-              if [[ "$f" == *arm64* ]]; then
-                mv "$f" "${dir}/curium_${VERSION}_macos-arm64.app.tar.gz.sig"
-              elif [[ "$f" == *x64* ]]; then
-                mv "$f" "${dir}/curium_${VERSION}_macos-x64.app.tar.gz.sig"
-              fi
+            if [[ "$f" == *arm64* ]]; then
+              mv "$f" "${dir}/curium_${VERSION}_macos-arm64.app.tar.gz.sig"
+            elif [[ "$f" == *x64* ]]; then
+              mv "$f" "${dir}/curium_${VERSION}_macos-x64.app.tar.gz.sig"
             fi
           done
           # Verify all macOS .app.tar.gz files were renamed
@@ -302,18 +295,22 @@ jobs:
             exit 1
           fi
 
-          FILES=(
-            desktop-artifacts/**/*.dmg
-            desktop-artifacts/**/*.dmg.sig
-            desktop-artifacts/**/*.app.tar.gz
-            desktop-artifacts/**/*.app.tar.gz.sig
-            desktop-artifacts/**/*.exe
-            desktop-artifacts/**/*.exe.sig
-            desktop-artifacts/**/*_linux-*.tar.gz
-            desktop-artifacts/**/*_linux-*.tar.gz.sig
-            desktop-artifacts/**/*.sha256
-            desktop-artifacts/**/*.sha256.asc
-          )
+          # Collect all artifacts via find (recursive), not ** globs
+          FILES=()
+          while IFS= read -r f; do
+            FILES+=("$f")
+          done < <(find desktop-artifacts \( \
+            -name "*.dmg" -o \
+            -name "*.dmg.sig" -o \
+            -name "*.app.tar.gz" -o \
+            -name "*.app.tar.gz.sig" -o \
+            -name "*.exe" -o \
+            -name "*.exe.sig" -o \
+            -name "*_linux-*.tar.gz" -o \
+            -name "*_linux-*.tar.gz.sig" -o \
+            -name "*.sha256" -o \
+            -name "*.sha256.asc" \
+          \))
 
           if [ ${#FILES[@]} -gt 0 ]; then
             gh release upload "$TAG" "${FILES[@]}" --repo "$REPO" --clobber
