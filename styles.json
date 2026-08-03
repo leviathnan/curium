@@ -1,0 +1,488 @@
+{
+  "pixel": [
+    {
+      "id": "sharp",
+      "label": "Square"
+    },
+    {
+      "id": "soft",
+      "label": "Soft"
+    },
+    {
+      "id": "round",
+      "label": "Round"
+    },
+    {
+      "id": "dots",
+      "label": "Dots"
+    },
+    {
+      "id": "liquid",
+      "label": "Liquid"
+    },
+    {
+      "id": "glued",
+      "label": "Glued"
+    },
+    {
+      "id": "smooth",
+      "label": "Smooth"
+    },
+    {
+      "id": "flow",
+      "label": "Flow"
+    },
+    {
+      "id": "blob",
+      "label": "Blob"
+    },
+    {
+      "id": "diamond",
+      "label": "Diamond"
+    },
+    {
+      "id": "cross",
+      "label": "Cross"
+    },
+    {
+      "id": "star",
+      "label": "Star"
+    },
+    {
+      "id": "triangle",
+      "label": "Triangle"
+    },
+    {
+      "id": "hexagon",
+      "label": "Hex"
+    },
+    {
+      "id": "plus",
+      "label": "Plus"
+    },
+    {
+      "id": "heart",
+      "label": "Heart"
+    },
+    {
+      "id": "sparkle",
+      "label": "Sparkle"
+    },
+    {
+      "id": "chevron",
+      "label": "Chevron"
+    },
+    {
+      "id": "wave",
+      "label": "Wave"
+    },
+    {
+      "id": "pinched-square",
+      "label": "Pinch"
+    },
+    {
+      "id": "circuit-board",
+      "label": "Circuit"
+    },
+    {
+      "id": "hashtag",
+      "label": "Hash"
+    },
+    {
+      "id": "vertical-line",
+      "label": "V-Line"
+    },
+    {
+      "id": "horizontal-line",
+      "label": "H-Line"
+    }
+  ],
+  "eye": [
+    {
+      "id": "sharp",
+      "label": "Sharp"
+    },
+    {
+      "id": "soft",
+      "label": "Soft"
+    },
+    {
+      "id": "round",
+      "label": "Round"
+    },
+    {
+      "id": "pill",
+      "label": "Pill"
+    },
+    {
+      "id": "dot",
+      "label": "Dot"
+    },
+    {
+      "id": "shield",
+      "label": "Shield"
+    },
+    {
+      "id": "hexagon",
+      "label": "Hex"
+    },
+    {
+      "id": "octagon",
+      "label": "Oct"
+    },
+    {
+      "id": "inpoint",
+      "label": "Inpoint"
+    },
+    {
+      "id": "outpoint",
+      "label": "Outpoint"
+    },
+    {
+      "id": "leaf",
+      "label": "Leaf"
+    }
+  ],
+  "pupil": [
+    {
+      "id": "dot",
+      "label": "Dot"
+    },
+    {
+      "id": "square",
+      "label": "Square"
+    },
+    {
+      "id": "diamond",
+      "label": "Diamond"
+    },
+    {
+      "id": "cross",
+      "label": "Cross"
+    },
+    {
+      "id": "hexagon",
+      "label": "Hex"
+    },
+    {
+      "id": "octagon",
+      "label": "Oct"
+    },
+    {
+      "id": "shield",
+      "label": "Shield"
+    },
+    {
+      "id": "star",
+      "label": "Star"
+    },
+    {
+      "id": "heart",
+      "label": "Heart"
+    },
+    {
+      "id": "blob",
+      "label": "Blob"
+    },
+    {
+      "id": "dome",
+      "label": "Dome"
+    },
+    {
+      "id": "oval",
+      "label": "Oval"
+    },
+    {
+      "id": "pentagon",
+      "label": "Penta"
+    },
+    {
+      "id": "scallop",
+      "label": "Scallop"
+    },
+    {
+      "id": "cloud",
+      "label": "Cloud"
+    },
+    {
+      "id": "droplet",
+      "label": "Drop"
+    },
+    {
+      "id": "pixel",
+      "label": "Pixel"
+    },
+    {
+      "id": "microchip",
+      "label": "Microchip"
+    },
+    {
+      "id": "hashtag",
+      "label": "Hashtag"
+    }
+  ],
+  "type": [
+    {
+      "id": "url",
+      "label": "URL"
+    },
+    {
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "id": "wifi",
+      "label": "WiFi"
+    },
+    {
+      "id": "email",
+      "label": "Email"
+    },
+    {
+      "id": "phone",
+      "label": "Phone"
+    },
+    {
+      "id": "sms",
+      "label": "SMS"
+    },
+    {
+      "id": "contact",
+      "label": "Contact"
+    },
+    {
+      "id": "location",
+      "label": "Location"
+    },
+    {
+      "id": "event",
+      "label": "Event"
+    },
+    {
+      "id": "otpauth",
+      "label": "OTP Auth"
+    }
+  ],
+  "frame": [
+    {
+      "id": "none",
+      "label": "None"
+    },
+    {
+      "id": "thin",
+      "label": "Thin"
+    },
+    {
+      "id": "rounded",
+      "label": "Round"
+    },
+    {
+      "id": "thick",
+      "label": "Thick"
+    },
+    {
+      "id": "dashed",
+      "label": "Dash"
+    },
+    {
+      "id": "dotted",
+      "label": "Dot"
+    },
+    {
+      "id": "double",
+      "label": "Dbl"
+    }
+  ],
+  "color": [
+    {
+      "id": "paper",
+      "fg": "#1c1917",
+      "bg": "#fafaf9",
+      "label": "Paper"
+    },
+    {
+      "id": "arctic",
+      "fg": "#041520",
+      "bg": "#bae6fd",
+      "label": "Arctic"
+    },
+    {
+      "id": "sky",
+      "fg": "#040e1a",
+      "bg": "#7dd3fc",
+      "label": "Sky"
+    },
+    {
+      "id": "mint",
+      "fg": "#022010",
+      "bg": "#a7f3d0",
+      "label": "Mint"
+    },
+    {
+      "id": "emerald",
+      "fg": "#022010",
+      "bg": "#6ee7b7",
+      "label": "Emerald"
+    },
+    {
+      "id": "lime",
+      "fg": "#0a1f00",
+      "bg": "#bef264",
+      "label": "Lime"
+    },
+    {
+      "id": "amber",
+      "fg": "#2d1800",
+      "bg": "#fde68a",
+      "label": "Amber"
+    },
+    {
+      "id": "gold",
+      "fg": "#1f0e00",
+      "bg": "#fcd34d",
+      "label": "Gold"
+    },
+    {
+      "id": "peach",
+      "fg": "#3d0e00",
+      "bg": "#fed7aa",
+      "label": "Peach"
+    },
+    {
+      "id": "coral",
+      "fg": "#2d0e00",
+      "bg": "#fdba74",
+      "label": "Coral"
+    },
+    {
+      "id": "sunset",
+      "fg": "#2d0e00",
+      "bg": "#fdba74",
+      "label": "Sunset"
+    },
+    {
+      "id": "lava",
+      "fg": "#2d0000",
+      "bg": "#fca5a5",
+      "label": "Lava"
+    },
+    {
+      "id": "cherry",
+      "fg": "#1a0008",
+      "bg": "#fda4af",
+      "label": "Cherry"
+    },
+    {
+      "id": "rose",
+      "fg": "#3d0020",
+      "bg": "#fecdd3",
+      "label": "Rose"
+    },
+    {
+      "id": "pink",
+      "fg": "#2d0020",
+      "bg": "#f9a8d4",
+      "label": "Pink"
+    },
+    {
+      "id": "fuchsia",
+      "fg": "#2d0040",
+      "bg": "#e879f9",
+      "label": "Fuchsia"
+    },
+    {
+      "id": "lavender",
+      "fg": "#1e0a40",
+      "bg": "#ddd6fe",
+      "label": "Lavender"
+    },
+    {
+      "id": "violet",
+      "fg": "#1a0540",
+      "bg": "#c4b5fd",
+      "label": "Violet"
+    },
+    {
+      "id": "indigo",
+      "fg": "#0a0a2e",
+      "bg": "#a5b4fc",
+      "label": "Indigo"
+    },
+    {
+      "id": "ocean",
+      "fg": "#020b1a",
+      "bg": "#93c5fd",
+      "label": "Ocean"
+    },
+    {
+      "id": "steel",
+      "fg": "#0c1a2e",
+      "bg": "#bae6fd",
+      "label": "Steel"
+    },
+    {
+      "id": "teal",
+      "fg": "#041a18",
+      "bg": "#00d4b8",
+      "label": "Teal"
+    },
+    {
+      "id": "sage",
+      "fg": "#0a1f0a",
+      "bg": "#bbf7d0",
+      "label": "Sage"
+    },
+    {
+      "id": "forest",
+      "fg": "#052010",
+      "bg": "#86efac",
+      "label": "Forest"
+    },
+    {
+      "id": "slate",
+      "fg": "#0f172a",
+      "bg": "#e2e8f0",
+      "label": "Slate"
+    },
+    {
+      "id": "cosmic",
+      "fg": "#eeeef5",
+      "bg": "#080810",
+      "label": "Cosmic"
+    },
+    {
+      "id": "midnight",
+      "fg": "#e0e7ff",
+      "bg": "#1e1b4b",
+      "label": "Midnight"
+    },
+    {
+      "id": "dusk",
+      "fg": "#e2e8f0",
+      "bg": "#334155",
+      "label": "Dusk"
+    }
+  ],
+  "corners": [
+    {
+      "id": 0,
+      "label": "Sharp"
+    },
+    {
+      "id": 8,
+      "label": "Slight"
+    },
+    {
+      "id": 16,
+      "label": "Soft"
+    },
+    {
+      "id": 24,
+      "label": "Round"
+    },
+    {
+      "id": 32,
+      "label": "Pill"
+    }
+  ]
+}
