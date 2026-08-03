@@ -1,9 +1,9 @@
 {
-  "commit": "88366d19ac8c0c1c05299d800c411b40d3cfd3c3",
-  "shortCommit": "88366d1",
-  "branch": "preview",
-  "commitDate": "2026-07-28 18:28:45 +0300",
-  "commitMessage": "Update desktop-release.yml",
+  "commit": "7f4fa636317c730475f247a7423157cd5e818c6b",
+  "shortCommit": "7f4fa63",
+  "branch": "master",
+  "commitDate": "2026-07-30 18:46:00 +0300",
+  "commitMessage": "up1845300726",
   "isDirty": true,
-  "buildDate": "2026-07-29T08:16:39.436Z"
+  "buildDate": "2026-08-03T17:22:58.466Z"
 }
