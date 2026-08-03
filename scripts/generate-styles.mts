@@ -49,6 +49,7 @@ const EXTRA_EYES = [
 ];
 
 const EXTRA_PUPILS = [
+  { id: "none", label: "None" },
   { id: "microchip", label: "Microchip" },
   { id: "hashtag", label: "Hashtag" },
 ];

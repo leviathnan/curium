@@ -213,6 +213,10 @@
       "label": "Pixel"
     },
     {
+      "id": "none",
+      "label": "None"
+    },
+    {
       "id": "microchip",
       "label": "Microchip"
     },
