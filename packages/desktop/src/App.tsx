@@ -8,7 +8,6 @@ import {
 } from "@curium/shared";
 import { zipSync, strToU8 } from "fflate";
 import { ShuffleIcon } from "@phosphor-icons/react";
-import { Analytics } from "@vercel/analytics/react";
 import { QRPreview } from "./components/QRPreview";
 import { LogoOverlay } from "./components/LogoOverlay";
 import { StylePanel } from "./panels/StylePanel";
@@ -776,7 +775,6 @@ export default function App() {
         onConfirm={confirmClearHistory}
         onCancel={() => setConfirmOpen(false)}
       />
-      {!isTauri && <Analytics />}
     </div>
   );
 }
