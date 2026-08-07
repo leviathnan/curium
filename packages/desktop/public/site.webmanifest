@@ -1,6 +1,9 @@
 {
   "name": "Curium",
   "short_name": "Curium",
+  "start_url": "/",
+  "scope": "/",
+  "id": "https://app.curium.design",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
