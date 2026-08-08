@@ -55,6 +55,7 @@ export default function App() {
   const [resolvedTheme, setResolvedTheme] = useState<
     "dark" | "light" | "amoled"
   >("dark");
+  const [showWebNotice, setShowWebNotice] = useState(true);
   const isTauri = useIsTauri();
   const showTitleBar = isTauri || typeof window !== "undefined" && new URLSearchParams(window.location.search).has("titlebar");
   const shuffleBtnRef = useRef<HTMLButtonElement>(null);
@@ -625,6 +626,37 @@ export default function App() {
       data-theme={resolvedTheme}
       {...(showTitleBar ? { "data-tauri": "" } : {})}
     >
+      {!isTauri && showWebNotice && (
+        <aside className="web-optimization-notice" role="note">
+          <strong>Web app update</strong>
+          <span>
+            app.curium.design is being optimized for mobile screens. Until then,
+            use Curium for Android or the version for your computer.
+            This web app works best on tablets and computers.
+            You can download it from either of the links below.
+          </span>
+          <span className="web-optimization-links">
+            <a
+              href="https://github.com/nylxar/curium/releases"
+              target="_blank"
+              rel="noreferrer"
+            >
+              GitHub releases
+            </a>
+            <a href="https://curium.design" target="_blank" rel="noreferrer">
+              curium.design
+            </a>
+          </span>
+          <button
+            type="button"
+            className="web-optimization-dismiss"
+            aria-label="Dismiss web app notice"
+            onClick={() => setShowWebNotice(false)}
+          >
+            X
+          </button>
+        </aside>
+      )}
       {(onboarding === "whatsnew" || onboarding === "welcome") && (
         <WhatsNew
           onDone={() => {

@@ -86,7 +86,7 @@ export function InfoPanel() {
           </a>
           <a
             className="link-row"
-            href="https://github.com/nylxar/curium/releases"
+            href="https://curium.design/download"
             target="_blank"
             rel="noreferrer"
           >
@@ -104,7 +104,7 @@ export function InfoPanel() {
           </a>
           <a
             className="link-row"
-            href="https://github.com/nylxar/curium"
+            href="https://curium.design"
             target="_blank"
             rel="noreferrer"
           >

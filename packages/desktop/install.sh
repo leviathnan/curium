@@ -1,8 +1,8 @@
 #!/bin/sh
 # Curium Linux installer
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/nylxar/curium/main/packages/desktop/install.sh | sh -s --
-#   ./install.sh --file ./curium_0.6.4_linux-x86_64.tar.gz
+#   curl -fsSL https://curium.design/install.sh | sh -s --
+#   ./install.sh -s -- --file ./curium_0.6.4_linux-x86_64.tar.gz
 #   curl -fsSL …/install.sh | sh -s --
 #   ./install.sh --uninstall
 #
@@ -71,6 +71,7 @@ warn() { printf '  \033[1;33mwarn:\033[0m %s\n' "$@" >&2; }
 
 cleanup() {
   [ -n "${TMPDIR_INSTALL:-}" ] && [ -d "$TMPDIR_INSTALL" ] && rm -rf "$TMPDIR_INSTALL"
+  [ -n "${GPG_HOME_INSTALL:-}" ] && [ -d "$GPG_HOME_INSTALL" ] && rm -rf "$GPG_HOME_INSTALL"
 }
 trap cleanup EXIT INT TERM
 
@@ -257,19 +258,17 @@ verify_signature() {
   file="$1"; sig_file="$2"
   command -v gpg > /dev/null 2>&1 || error "gpg is required for release verification — install gnupg"
   [ -f "$sig_file" ] || error "signature file not found: $sig_file"
-  keyring_dir=$(mktemp -d)
-  keyring="$keyring_dir/release-keyring.gpg"
-  pubkey="$keyring_dir/release-signing-key.gpg"
-  printf '%s\n' "$RELEASE_SIGNING_KEY" > "$pubkey"
-  if ! gpg --batch --no-default-keyring --keyring "$keyring" --import "$pubkey"; then
-    rm -rf "$keyring_dir"
+  GPG_HOME_INSTALL=$(mktemp -d)
+  if ! printf '%s\n' "$RELEASE_SIGNING_KEY" |
+    gpg --homedir "$GPG_HOME_INSTALL" --batch --import 2>/dev/null
+  then
     error "could not import the embedded release signing key"
   fi
-  if gpg --batch --no-default-keyring --keyring "$keyring" --verify "$sig_file" "$file"; then
-    rm -rf "$keyring_dir"
+  if gpg --homedir "$GPG_HOME_INSTALL" --batch --verify "$sig_file" "$file"; then
+    rm -rf "$GPG_HOME_INSTALL"
+    GPG_HOME_INSTALL=""
     success "Release signature verified"
   else
-    rm -rf "$keyring_dir"
     error "release signature verification failed — release may be tampered with"
   fi
 }
