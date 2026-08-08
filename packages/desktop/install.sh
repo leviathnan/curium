@@ -260,11 +260,12 @@ verify_signature() {
   [ -f "$sig_file" ] || error "signature file not found: $sig_file"
   GPG_HOME_INSTALL=$(mktemp -d)
   if ! printf '%s\n' "$RELEASE_SIGNING_KEY" |
-    gpg --homedir "$GPG_HOME_INSTALL" --batch --import 2>/dev/null
+    gpg --homedir "$GPG_HOME_INSTALL" --no-options --no-tty --batch --import
   then
     error "could not import the embedded release signing key"
   fi
-  if gpg --homedir "$GPG_HOME_INSTALL" --batch --verify "$sig_file" "$file"; then
+  if gpg --homedir "$GPG_HOME_INSTALL" --no-options --no-tty --batch \
+    --verify "$sig_file" "$file"; then
     rm -rf "$GPG_HOME_INSTALL"
     GPG_HOME_INSTALL=""
     success "Release signature verified"
