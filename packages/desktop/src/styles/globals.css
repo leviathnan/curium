@@ -500,6 +500,71 @@ body {
   padding-top: 36px;
 }
 
+.web-optimization-notice {
+  display: none;
+  position: fixed;
+  top: var(--spacing-md);
+  left: 50%;
+  z-index: 1000;
+  max-width: min(720px, calc(100vw - 32px));
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm)
+    calc(var(--spacing-md) + 28px);
+  transform: translateX(-50%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  box-shadow: 0 8px 24px #00000026;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+  backdrop-filter: blur(12px);
+}
+
+.web-optimization-notice strong {
+  flex: 0 0 auto;
+  color: var(--text);
+}
+
+.web-optimization-links {
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--spacing-sm);
+  white-space: nowrap;
+}
+
+.web-optimization-links a {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.web-optimization-links a:hover {
+  color: var(--primary);
+}
+
+.web-optimization-dismiss {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font: inherit;
+  line-height: 1;
+}
+
+.web-optimization-dismiss:hover,
+.web-optimization-dismiss:focus-visible {
+  background: var(--surface-offset);
+  color: var(--text);
+}
+
 /* ── Icon Tab Bar (left edge) ───────────────────────────────────────────── */
 
 .tab-bar {
@@ -1647,6 +1712,22 @@ textarea.input {
 }
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 425px) {
+  .web-optimization-notice {
+    display: flex;
+    top: var(--spacing-sm);
+    max-width: calc(100vw - 20px);
+    flex-wrap: wrap;
+    gap: 4px var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm)
+      calc(var(--spacing-sm) + 28px);
+  }
+
+  .web-optimization-notice > span:first-of-type {
+    flex-basis: 100%;
+  }
+}
 
 @media (max-width: 767px) {
   .app {
