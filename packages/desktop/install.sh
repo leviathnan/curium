@@ -61,7 +61,7 @@ AAAeACBzYWx0QG5vdGF0aW9ucy5zZXF1b2lhLXBncC5vcme0rfc84lsyz4/PeZT0
 +a2UKklwUzFDD8XiZ2LpY772RwKbDBYhBMfrWlwpSSQo5GWM2YqDbOsOIcVVAAC5
 fwD9EeKQn2jabam70QBTrW9bg4bIfRSVMlsrGqvEyg+H9IIA/jzFZefp5HisX2Bv
 IPFZHZorw1FBsgtKf5bktMYh9kYF
-=/nRy
+=czL7
 -----END PGP PUBLIC KEY BLOCK-----'
 
 info() { printf '  \033[1;34m>\033[0m %s\n' "$@"; }
