@@ -7,6 +7,15 @@ const path = require("path");
 
 const mdPath = path.join(__dirname, "..", "RELEASE_NOTES.md");
 const outPath = path.join(__dirname, "..", "constants", "release-notes.ts");
+const desktopOutPath = path.join(
+  __dirname,
+  "..",
+  "packages",
+  "desktop",
+  "src",
+  "constants",
+  "release-notes.ts",
+);
 
 const md = fs.readFileSync(mdPath, "utf8").trimEnd();
 
@@ -17,4 +26,5 @@ export const RELEASE_NOTES_MD = \`${md.replace(/\\/g, "\\\\").replace(/`/g, "\\`
 `;
 
 fs.writeFileSync(outPath, content);
+fs.writeFileSync(desktopOutPath, content);
 console.log("Synced release notes to", outPath);
