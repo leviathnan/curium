@@ -35,7 +35,7 @@ gZUuOgWyG87+D9iD/DxOgDCnLf4LzRpDdXJpdW0gUmVsZWFzZSBTaWduaW5nIEtl
 ecLAFAQTFgoAhgWCampMUwWJBaSPvQMLCQcJEIqDbOsOIcVVRxQAAAAAAB4AIHNh
 bHRAbm90YXRpb25zLnNlcXVvaWEtcGdwLm9yZwJwcKtw/U5FfDR5Vtt+nXNqUbyC
 AU5ikufESQuFRkdfAxUKCAKZAQKbAQIeCRYhBMfrWlwpSSQo5GWM2YqDbOsOIcVV
-AAAagEAkDbqop9fDrHv2ghDqt/9go5Z8O1J568vxRmd8wER1nYA/RSumBdLpEqU
+AAAgagEAkDbqop9fDrHv2ghDqt/9go5Z8O1J568vxRmd8wER1nYA/RSumBdLpEqU
 JUjHeGHeR/voz0MFu3Nb5SFeK1VEAvYNzjMEampMUxYJKwYBBAHaRw8BAQdAHHUI
 QneYWsSxUxgdiE8+iiWinbn7BmqdxaFt8kMKkhTCwMUEGBYKATcFgmpqTFMFiQWk
 j70JEIqDbOsOIcVVRxQAAAAAAB4AIHNhbHRAbm90YXRpb25zLnNlcXVvaWEtcGdw
@@ -260,11 +260,14 @@ verify_signature() {
   [ -f "$sig_file" ] || error "signature file not found: $sig_file"
   GPG_HOME_INSTALL=$(mktemp -d)
   if ! printf '%s\n' "$RELEASE_SIGNING_KEY" |
-    gpg --homedir "$GPG_HOME_INSTALL" --batch --import 2>/dev/null
+    gpg --homedir "$GPG_HOME_INSTALL" --no-options --no-tty --batch --import
   then
     error "could not import the embedded release signing key"
   fi
-  if gpg --homedir "$GPG_HOME_INSTALL" --batch --verify "$sig_file" "$file"; then
+  printf '%s:6:\n' 'C7EB5A5C29492428E4658CD98A836CEB0E21C555' |
+    gpg --homedir "$GPG_HOME_INSTALL" --no-options --no-tty --batch --import-ownertrust >/dev/null
+  if gpg --homedir "$GPG_HOME_INSTALL" --no-options --no-tty --batch \
+    --verify "$sig_file" "$file"; then
     rm -rf "$GPG_HOME_INSTALL"
     GPG_HOME_INSTALL=""
     success "Release signature verified"
@@ -275,6 +278,20 @@ verify_signature() {
 
 update_icon_cache() {
   icons_base="${XDG_DATA_HOME:-$HOME/.local/share}/icons/hicolor"
+  mkdir -p "$icons_base"
+  if [ ! -f "$icons_base/index.theme" ]; then
+    cat > "$icons_base/index.theme" <<'EOF'
+[Icon Theme]
+Name=hicolor
+Comment=Fallback Icon Theme
+Directories=512x512/apps
+
+[512x512/apps]
+Size=512
+Context=Applications
+Type=Fixed
+EOF
+  fi
   if command -v gtk-update-icon-cache > /dev/null 2>&1; then
     gtk-update-icon-cache -f -t "$icons_base" 2>/dev/null || true
   fi
@@ -429,7 +446,9 @@ do_install() {
   applications_dir="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
   if [ -f "$app_dir/share/applications/curium.desktop" ]; then
     mkdir -p "$applications_dir"
-    sed "s|^Exec=.*|Exec=$bin_dir/curium %U|" \
+    exec_path=$(printf '%s' "$bin_dir/curium" | sed 's/[\\&|]/\\&/g')
+    icon_path=$(printf '%s' "$icons_dir/curium.png" | sed 's/[\\&|]/\\&/g')
+    sed "s|^Exec=.*|Exec=$exec_path %U|; s|^Icon=.*|Icon=$icon_path|" \
       "$app_dir/share/applications/curium.desktop" \
       > "$applications_dir/curium.desktop"
   fi
