@@ -264,6 +264,8 @@ verify_signature() {
   then
     error "could not import the embedded release signing key"
   fi
+  printf '%s:6:\n' 'C7EB5A5C29492428E4658CD98A836CEB0E21C555' |
+    gpg --homedir "$GPG_HOME_INSTALL" --no-options --no-tty --batch --import-ownertrust >/dev/null
   if gpg --homedir "$GPG_HOME_INSTALL" --no-options --no-tty --batch \
     --verify "$sig_file" "$file"; then
     rm -rf "$GPG_HOME_INSTALL"
@@ -276,6 +278,19 @@ verify_signature() {
 
 update_icon_cache() {
   icons_base="${XDG_DATA_HOME:-$HOME/.local/share}/icons/hicolor"
+  if [ ! -f "$icons_base/index.theme" ]; then
+    cat > "$icons_base/index.theme" <<'EOF'
+[Icon Theme]
+Name=hicolor
+Comment=Fallback Icon Theme
+Directories=512x512/apps
+
+[512x512/apps]
+Size=512
+Context=Applications
+Type=Fixed
+EOF
+  fi
   if command -v gtk-update-icon-cache > /dev/null 2>&1; then
     gtk-update-icon-cache -f -t "$icons_base" 2>/dev/null || true
   fi
@@ -432,6 +447,7 @@ do_install() {
     mkdir -p "$applications_dir"
     sed "s|^Exec=.*|Exec=$bin_dir/curium %U|" \
       "$app_dir/share/applications/curium.desktop" \
+      | sed "s|^Icon=.*|Icon=$icons_dir/curium.png|" \
       > "$applications_dir/curium.desktop"
   fi
 
