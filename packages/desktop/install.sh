@@ -278,6 +278,7 @@ verify_signature() {
 
 update_icon_cache() {
   icons_base="${XDG_DATA_HOME:-$HOME/.local/share}/icons/hicolor"
+  mkdir -p "$icons_base"
   if [ ! -f "$icons_base/index.theme" ]; then
     cat > "$icons_base/index.theme" <<'EOF'
 [Icon Theme]
@@ -445,9 +446,10 @@ do_install() {
   applications_dir="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
   if [ -f "$app_dir/share/applications/curium.desktop" ]; then
     mkdir -p "$applications_dir"
-    sed "s|^Exec=.*|Exec=$bin_dir/curium %U|" \
+    exec_path=$(printf '%s' "$bin_dir/curium" | sed 's/[\\&|]/\\&/g')
+    icon_path=$(printf '%s' "$icons_dir/curium.png" | sed 's/[\\&|]/\\&/g')
+    sed "s|^Exec=.*|Exec=$exec_path %U|; s|^Icon=.*|Icon=$icon_path|" \
       "$app_dir/share/applications/curium.desktop" \
-      | sed "s|^Icon=.*|Icon=$icons_dir/curium.png|" \
       > "$applications_dir/curium.desktop"
   fi
 
