@@ -2,6 +2,7 @@ const ICON_MAP: Record<string, string> = {
   "what's new": "sparkles",
   "new": "sparkles",
   "features": "sparkles",
+  "highlights": "sparkles",
   "fixes": "heart",
   "fix": "heart",
   "bug fixes": "heart",
@@ -16,6 +17,7 @@ const ICON_MAP: Record<string, string> = {
   "performance": "zap",
   "removed": "minus-circle",
   "deprecated": "alert-triangle",
+  "known limitations": "alert-triangle",
   "added": "plus-circle",
 };
 
@@ -23,6 +25,7 @@ export interface ReleaseSection {
   title: string;
   icon: string;
   items: string[];
+  group: string;
 }
 
 export interface ParsedRelease {
@@ -37,6 +40,7 @@ export function parseReleaseNotes(markdown: string): ParsedRelease {
   let channel = "";
   const sections: ReleaseSection[] = [];
   let current: ReleaseSection | null = null;
+  let group = "";
 
   for (const raw of lines) {
     const line = raw.trimEnd();
@@ -46,13 +50,23 @@ export function parseReleaseNotes(markdown: string): ParsedRelease {
       channel = h1[2] ?? "";
       continue;
     }
-    const h2 = line.match(/^##\s+(.+)/);
-    if (h2) {
-      if (current) sections.push(current);
-      const title = h2[1].trim();
+    const heading = line.match(/^(#{2,3})\s+(.+)/);
+    if (heading) {
+      if (current?.items.length) sections.push(current);
+      const title = heading[2].trim();
+      const level = heading[1].length;
+      const headingVersion = title.match(/\bv([\d.]+)/i);
+      const headingChannel = title.match(/\(([^)]+)\)/)?.[1];
+      if (!version && headingVersion) version = headingVersion[1];
+      if (!channel && headingChannel) channel = headingChannel;
+      if (level === 2) {
+        group = title;
+        current = null;
+        continue;
+      }
       const key = title.toLowerCase();
       const icon = ICON_MAP[key] ?? "list";
-      current = { title, icon, items: [] };
+      current = { title, icon, items: [], group };
       continue;
     }
     const bullet = line.match(/^-\s+(.+)/);
@@ -60,6 +74,6 @@ export function parseReleaseNotes(markdown: string): ParsedRelease {
       current.items.push(bullet[1].trim());
     }
   }
-  if (current) sections.push(current);
+  if (current?.items.length) sections.push(current);
   return { version, channel, sections };
 }
