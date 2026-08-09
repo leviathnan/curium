@@ -77,7 +77,7 @@ Curium for Desktop (MacOS, Windows, and Linux) is in beta. Expect some things to
 
 **macOS & Windows:** Download the `.dmg` or `.exe` from [Releases](https://github.com/nylxar/curium/releases) and install as usual.
 
-**Linux:** Install with one command:
+**Linux:** Make sure webkit2gtk-4.1 is installed, then install with one command:
 ```bash
 curl -fsSL https://curium.design/install.sh | sh -s --
 ```
